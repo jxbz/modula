@@ -31,16 +31,22 @@ This runs on CPU and should get train loss: 1.65 and test loss: 1.80 after 2000 
 
 ## Learning rate transfer with Modula
 
-The following figure shows learning rate sweeps for GPT trained for 10k steps on OpenWebText, at varying width and depth. We compare three setups:
-1. our reimplementation of nanoGPT with Adam (column 1);
-2. our GPT implementation with Adam and without modular normalization (column 2);
-3. our GPT implementation with Adam and with modular normalization (column 3).
+The following figures are all for 10k steps of training GPT on OpenWebText.
 
-![alt text](/assets/nanogpt-vs-modula.svg)
+The left two panels of this first figure show that the learning rate of modular-normalized-Adam transfers across width and depth. The right two panels show scaling performance when learning rate is tuned at the scale marked by the gray dotted line. Modular normalization fixes width and depth scaling for both SGD and Adam.
 
-Notice that our GPT implementation transfers learning rate better than nanoGPT, even without modular normalization. We also noticed other interesting behaviours: for example, our GPT implementation with modular normalization transfers learning rate quite well across context length:
+![some results](/assets/aggregate.svg)
 
-![alt text](/assets/gpt-owt-context.svg)
+Our GPT implementation differs slightly from standard nanoGPT since we designed it to scale better. To check our implementation is not losing performance compared to standard nanoGPT, in the next figure we compare three setups:
+1. our direct reimplementation of nanoGPT with Adam (column 1);
+2. our custom GPT implementation with Adam and without modular normalization (column 2);
+3. our custom GPT implementation with Adam and with modular normalization (column 3).
+
+![some more results](/assets/nanogpt-vs-modula.svg)
+
+Notice that our GPT implementation transfers learning rate better than nanoGPT, even without modular normalization (column 2 versus column 1). We also noticed other interesting behaviours: for example, our GPT implementation with modular normalization transfers learning rate quite well across context length:
+
+![and some more results](/assets/gpt-owt-context.svg)
 
 ## Training an MLP in Modula
 
