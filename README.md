@@ -32,9 +32,9 @@ This runs on CPU and should get train loss: 1.65 and test loss: 1.80 after 2000 
 ## Learning rate transfer with Modula
 
 The following figure shows learning rate sweeps for GPT trained for 10k steps on OpenWebText, at varying width and depth. We compare three setups:
-1. our reimplementation of nanoGPT with Adam;
-2. our GPT implementation with Adam and without modular normalization;
-3. our GPT implementation with Adam and with modular normalization.
+1. our reimplementation of nanoGPT with Adam (column 1);
+2. our GPT implementation with Adam and without modular normalization (column 2);
+3. our GPT implementation with Adam and with modular normalization (column 3).
 
 ![alt text](/assets/nanogpt-vs-modula.svg)
 
