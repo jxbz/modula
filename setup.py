@@ -3,7 +3,7 @@ import setuptools
 setuptools.setup(
     name="modula",
     packages=setuptools.find_packages(),
-    version="0.0.0.0.0.1",
+    version="0.0.0.0.0.2",
     author="Jeremy Bernstein",
     author_email="jbernstein@mit.edu",
     description="Automatically normalize NN training in the modular norm.",
