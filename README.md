@@ -30,7 +30,7 @@ The following figure shows learning rate sweeps for GPT trained for 10k steps on
 
 ![alt text](/assets/nanogpt-vs-modula.svg)
 
-Notice that our GPT implementation transfers learning rate better than nanoGPT, even without modular normalization. We also noticed other intersting behaviours: for example, our GPT implementation with modular normalization transfers learning rate quite well across context length:
+Notice that our GPT implementation transfers learning rate better than nanoGPT, even without modular normalization. We also noticed other interesting behaviours: for example, our GPT implementation with modular normalization transfers learning rate quite well across context length:
 
 ![alt text](/assets/gpt-owt-context.svg)
 
