@@ -16,10 +16,18 @@ Install modula via pip:
 pip install modula
 ```
 
-And train an MLP by running:
+Next, let's download the Shakespeare data:
 ```bash
-python examples/hello-world.py
+pip install datasets
+python examples/data/shakespeare.py
 ```
+
+And finally, let's train a GPT:
+```bash
+python examples/train-GPT.py
+```
+
+This runs on CPU and should get train loss: 1.65 and test loss: 1.80 after 2000 iterations.
 
 ## Learning rate transfer with Modula
 
