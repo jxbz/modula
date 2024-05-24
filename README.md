@@ -6,7 +6,7 @@
 
 Modula is a deep learning framework designed for graceful scaling. The user defines a compound module (i.e. neural network) in Modula by arbitrarily composing atom and bond modules. Modula then automatically normalizes weight updates in the modular norm corresponding to this compound. This leads to automatic learning rate transfer across width, depth and possibly other architectural dimensions. Modula is built on top of [PyTorch](https://pytorch.org/).
 
-Modula is an experimental framework based on our research paper: Scalable Optimization in the Modular Norm. Use at your own risk.
+Modula is an experimental framework based on our research paper: [Scalable Optimization in the Modular Norm](https://arxiv.org/abs/2405.14813). Use at your own risk.
 
 ## Quick start
 
@@ -139,13 +139,13 @@ The point of all this is that you can build a complicated compound module `m`, a
 
 ## BibTeX
 
-If Modula is useful in your research, consider citing our paper:
+If Modula is useful in your research, consider citing [our paper](https://arxiv.org/abs/2405.14813):
 
 ```bibtex
 @article{modula,
   author  = {Tim Large and Yang Liu and Minyoung Huh and Hyojin Bahng and Phillip Isola and Jeremy Bernstein},
   title   = {Scalable Optimization in the Modular Norm},
-  journal = {arXiv},
+  journal = {arXiv:2405.14813},
   year    = 2024
 }
 ```
