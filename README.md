@@ -126,6 +126,7 @@ The point of all this is that you can build a complicated compound module `m`, a
 │   ├── gradient-accumulation.py    # gradient accumulation for large batch training
 │   └── multi-gpu.py                # multi GPU training with torch.distributed
 ├── modula
+│   ├── __init__.py
 │   ├── abstract.py                 # basic definitions: composition & concatenation, etc.
 │   ├── atom.py                     # modules with weights: linear, conv2d etc.
 │   ├── bond.py                     # modules without weights: ReLU, FunctionalAttention, etc.
@@ -133,6 +134,7 @@ The point of all this is that you can build a complicated compound module `m`, a
 │   └── vector.py                   # class for storing weight vectors
 ├── paper                           # code associated with the arXiv paper
     └── ...
+├── LICENSE                         # MIT license
 ├── README.md                       # this file
 └── setup.py                        # pip package stuff
 ```
