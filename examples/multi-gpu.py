@@ -17,13 +17,13 @@ print(f"rank {rank} \t world size {dist.get_world_size()} \t threads {get_num_th
 dist.barrier()
 
 # sample worker-specific data
-manual_seed(rank)
+manual_seed(rank)    # ensure each worker gets different data
 data, target = randn(1000, device=rank), randn(10, device=rank)
 
 # create model
+manual_seed(0)       # ensure each worker gets the same model weights
 mlp = Linear(10,10000) @ ReLU() @ Linear(10000, 1000)
 weights = mlp.initialize(device=rank)
-weights.broadcast() # synchronize weights across workers
 
 # train model
 for step in range(steps:=20):
@@ -35,7 +35,6 @@ for step in range(steps:=20):
     weights.grad().all_reduce() # average the raw gradients across workers
 
     with no_grad():
-        manual_seed(0) # ensure spectral normalization uses the same seed across workers
         mlp.normalize(grad := weights.grad())
         weights -= 0.1 * grad
         weights.zero_grad()
