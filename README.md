@@ -59,11 +59,11 @@ for step in range(steps:=20):
     loss.backward()
 
     with no_grad():
-        mlp.normalize(grad := weights.grad())       # normalize the gradient in the modular norm
+        mlp.normalize(grad := weights.grad())     # normalize the gradient in the modular norm
         weights -= 0.1 * grad
         weights.zero_grad()
     
-        mlp.regularize(weights, strength = 0.01)    # regularize the weight vector
+        mlp.regularize(weights, strength = 0.01)  # regularize the weight vector
 
     print(step, loss.item())
 ```
