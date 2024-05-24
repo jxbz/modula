@@ -4,9 +4,9 @@
   <img alt="modula logo" src="assets/modula.svg">
 </picture>
 
-Modula is a deep learning framework designed for graceful scaling. The user defines a compound module (i.e. neural network) in Modula by arbitrarily composing atom and bond modules. Modula then automatically normalizes weight updates in the modular norm corresponding to this compound. This leads to automatic learning rate transfer across width, depth and possibly other architectural dimensions. Modula is built on top of [PyTorch](https://pytorch.org/).
+Modula is a deep learning framework designed for graceful scaling. The user defines a compound module (i.e. neural network) in Modula by arbitrarily composing atom and bond modules (e.g. linear layers and nonlinearities). Modula then automatically normalizes weight updates in the modular norm corresponding to this compound. This leads to automatic learning rate transfer across width, depth and possibly other architectural dimensions. Modula is built on top of [PyTorch](https://pytorch.org/).
 
-Modula is an experimental framework based on our research paper: Scalable Optimization in the Modular Norm. Use at your own risk.
+Modula is an experimental framework based on our research paper: [Scalable Optimization in the Modular Norm](https://arxiv.org/abs/2405.14813). Use at your own risk.
 
 ## Quick start
 
@@ -30,7 +30,7 @@ The following figure shows learning rate sweeps for GPT trained for 10k steps on
 
 ![alt text](/assets/nanogpt-vs-modula.svg)
 
-Notice that our GPT implementation transfers learning rate better than nanoGPT, even without modular normalization. We also noticed other intersting behaviours: for example, our GPT implementation with modular normalization transfers learning rate quite well across context length:
+Notice that our GPT implementation transfers learning rate better than nanoGPT, even without modular normalization. We also noticed other interesting behaviours: for example, our GPT implementation with modular normalization transfers learning rate quite well across context length:
 
 ![alt text](/assets/gpt-owt-context.svg)
 
@@ -59,11 +59,11 @@ for step in range(steps:=20):
     loss.backward()
 
     with no_grad():
-        mlp.normalize(grad := weights.grad())       # normalize the gradient in the modular norm
+        mlp.normalize(grad := weights.grad())     # normalize the gradient in the modular norm
         weights -= 0.1 * grad
         weights.zero_grad()
     
-        mlp.regularize(weights, strength = 0.01)    # regularize the weight vector
+        mlp.regularize(weights, strength = 0.01)  # regularize the weight vector
 
     print(step, loss.item())
 ```
@@ -107,13 +107,13 @@ M_1 + M_2     # returns the module sum
 a * M         # multiplies module M by scalar a
 M ** L        # returns the Lth iterate of module M, i.e. M @ M @ ... @ M
 ```
-So, for example, the following code builds an `L` layer resnet with block module `block`:
+So, for example, the following `residualize` function takes a block module `block` and a depth `L` and returns a resnet with this block:
 ```python
-from modula.bond import Identity as I
-resnet = lambda L, block : ((1 - 1/L) * I + 1/L * block) ** L
+from modula.bond import Identity
+residualize = lambda block, L : ((1 - 1/L) * Identity() + 1/L * block) ** L
 ```
 
-The point of all this is that you can build a complicated compound module `m`, and all module attributes will be automatically inferred. You can then call `m.normalize` to normalize the Adam or SGD updates, and the learning rate will automatically transfer when scaling the architecture.
+The point of all this is that you can build a complicated compound module `m`, and all module attributes will be automatically inferred. Then during training, you can call `m.normalize` on the Adam or SGD updates, and the learning rate will automatically transfer when scaling the architecture.
 
 ## Repository structure
 
@@ -139,13 +139,13 @@ The point of all this is that you can build a complicated compound module `m`, a
 
 ## BibTeX
 
-If Modula is useful in your research, consider citing our paper:
+If Modula is useful in your research, consider citing [our paper](https://arxiv.org/abs/2405.14813):
 
 ```bibtex
 @article{modula,
   author  = {Tim Large and Yang Liu and Minyoung Huh and Hyojin Bahng and Phillip Isola and Jeremy Bernstein},
   title   = {Scalable Optimization in the Modular Norm},
-  journal = {arXiv},
+  journal = {arXiv:2405.14813},
   year    = 2024
 }
 ```
