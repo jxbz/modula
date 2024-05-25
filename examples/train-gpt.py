@@ -1,3 +1,4 @@
+import time
 import torch
 import numpy as np
 
@@ -38,6 +39,21 @@ def gpt_train_flops(slen: int, bs: int, causal=True) -> int:
     # assume no activation checkpointing
     flops += num_blocks * xf_layer_fwd_flops(slen, bs, causal) * 3
     return flops
+
+class SpeedLogger:
+    def __init__(self, ideal_flops_per_sec: float):
+        self.tps = []
+        self.mfu = []
+        self.fps = ideal_flops_per_sec
+
+    def add(self, slen: int, bs: int, duration: float) -> tuple[float,float]:
+        flops = gpt_train_flops(slen, bs)
+        self.tps.append(slen*bs / duration)
+        self.mfu.append(flops / duration / self.fps)
+        return self.tps[-1], self.mfu[-1]
+
+    def ave(self):
+        return sum(self.tps) / len(self.tps), sum(self.mfu) / len(self.mfu)
 
 # training hparams
 
@@ -146,6 +162,8 @@ def train(device, ideal_flops_per_sec):
 
     # train the model
 
+    speed_logger = SpeedLogger(ideal_flops_per_sec)
+
     for step in range(steps):
 
         if step % log_interval == 0:
@@ -163,6 +181,7 @@ def train(device, ideal_flops_per_sec):
             test_loss /= eval_steps
             test_acc /= eval_steps
 
+        t0 = time.time()
         data, target = getBatch(train = True)
         output = gpt.forward(data, weights)
         output = output.view(-1, output.size(-1))
@@ -191,11 +210,16 @@ def train(device, ideal_flops_per_sec):
             gpt.regularize(weights, strength = init_lr * schedule * wd)
             weights.zero_grad()
 
+        speed_logger.add(*data.shape, time.time() - t0)
+
         if step % log_interval == 0:
+            tps, mfu = speed_logger.ave()
             print(
                 "step:", step,
-                "\t train loss:", "%.2f" % train_loss.item(), 
+                "\t train loss:", "%.2f" % train_loss.item(),
                 "\t test loss:",  "%.2f" % test_loss.item(),
+                f"\t tokens/gpu/sec: {tps:.2f}",
+                f"\t MFU: {mfu*100:.2f}%",
             )
 
 
