@@ -108,8 +108,9 @@ class SimpleLLMDataset(torch.utils.data.Dataset):
 
 # now let's start doing stuff
 
-if __name__ == "__main__":
 
+@torch.cuda.amp.autocast(dtype=torch.bfloat16)
+def train(device, ideal_flops_per_sec):
     # load the data
 
     trainset = SimpleLLMDataset(np.memmap("examples/data/shakespeare/train.bin", dtype=np.uint16, mode='r'), context)
@@ -124,12 +125,15 @@ if __name__ == "__main__":
     train_iterator = iter(train_loader)
     test_iterator  = iter(test_loader)
 
-    getBatch = lambda train: next(train_iterator if train else test_iterator)
+    def getBatch(train: bool) -> list:
+        res = next(train_iterator if train else test_iterator)
+        return [t.to(device=device) for t in res]
 
     # load the model
 
     gpt = GPT(vocab_size, context, num_heads, d_embed, d_query, d_value, num_blocks)
-    weights = gpt.initialize(device="cpu")
+    weights = gpt.initialize(device=device)
+    gpt.forward = torch.compile(gpt.forward)
 
     # initialize the Adam state
 
@@ -188,6 +192,18 @@ if __name__ == "__main__":
             weights.zero_grad()
 
         if step % log_interval == 0:
-            print(    "step:", step,
-                    "\t train loss:", "%.2f" % train_loss.item(), 
-                    "\t test loss:",  "%.2f" % test_loss.item()   )
+            print(
+                "step:", step,
+                "\t train loss:", "%.2f" % train_loss.item(), 
+                "\t test loss:",  "%.2f" % test_loss.item(),
+            )
+
+
+if __name__ == "__main__":
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--cuda', action='store_true')
+    args = ap.parse_args()
+
+    torch.set_float32_matmul_precision("medium")
+    train('cuda' if args.cuda else 'cpu', GPU_16BIT_FLOPS['3090'])
