@@ -12,6 +12,15 @@ d_query = 32
 d_value = 32
 num_blocks = 4
 
+# Llama-7b-like values, excluding the vocabulary size.
+vocab_size = 256
+context = 1024
+num_heads = 32
+d_embed = 4096
+d_query = 128
+d_value = 128
+num_blocks = 4
+
 GPU_16BIT_FLOPS = {
     "h100-sxm": 1.979e15 / 2,
     "h100-pcie": 1.513e15 / 2,
@@ -59,10 +68,10 @@ class SpeedLogger:
 
 init_lr = 0.5
 wd = 0.01
-batch_size = 12
+batch_size = 2 # 12
 steps = 2001
 eval_steps = 100
-log_interval = 200
+log_interval = 10 # 200
 
 # let's start by defining our GPT architecture
 # (we could instead just import GPT from modula.compound)
