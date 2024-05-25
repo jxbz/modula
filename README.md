@@ -111,7 +111,7 @@ m.regularize(w: Vector, strength: float)     # regularizes vector w in-place
 There are three kinds of modules in Modula:
 - Atoms are modules that have weights and where the attributes are hand-declared, e.g. `modula.atom.Linear`;
 - Bonds are modules without weights and where the attributes are hand-declared, e.g. `modula.bond.GELU`;
-- Compounds are modules built by combining atoms and bonds---their atributes are inferred automatically, e.g. `modula.compound.GPT`.
+- Compounds are modules built by combining atoms and bonds---their attributes are inferred automatically, e.g. `modula.compound.GPT`.
 
 We provide the following basic operations for building compounds:
 ```python
