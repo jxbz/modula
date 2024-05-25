@@ -11,6 +11,34 @@ d_query = 32
 d_value = 32
 num_blocks = 4
 
+GPU_16BIT_FLOPS = {
+    "h100-sxm": 1.979e15 / 2,
+    "h100-pcie": 1.513e15 / 2,
+    "a100": 312e12,
+    "v100-sxm": 125e12,
+    "6000A": 364.25e12,
+    "4090": 165.2 * 10**12,
+    "3090": 71 * 10**12,
+    "t4": 65e12,
+}
+def xf_layer_fwd_flops(slen: int, bs: int=1, causal=True) -> int:
+    p_mlp = d_embed * 4 * d_embed * 2
+    f_mlp = p_mlp * 2 * slen
+
+    assert d_query == d_value, "Dq != Dv not implemented"
+    p_att = 4 * d_embed * d_embed
+    f_att = p_att * 2 * slen
+    f_sdpa = 4 * slen * slen * d_embed // (2 if causal else 1) # approximation
+
+    return (f_mlp + f_att + f_sdpa) * bs
+
+def gpt_train_flops(slen: int, bs: int, causal=True) -> int:
+    # lmhead layer:
+    flops = 6 * slen * bs * d_embed * vocab_size
+    # assume no activation checkpointing
+    flops += num_blocks * xf_layer_fwd_flops(slen, bs, causal) * 3
+    return flops
+
 # training hparams
 
 init_lr = 0.5
