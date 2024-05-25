@@ -24,7 +24,7 @@ python examples/data/shakespeare.py
 
 And finally, let's train a GPT:
 ```bash
-python examples/train-GPT.py
+python examples/train-gpt.py
 ```
 
 This runs on CPU and should get train loss: 1.65 and test loss: 1.80 after 2000 iterations.
