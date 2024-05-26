@@ -159,6 +159,9 @@ def train(device, ideal_flops_per_sec):
     gpt = GPT(vocab_size, context, num_heads, d_embed, d_query, d_value, num_blocks)
     weights = gpt.initialize(device=device)
     gpt.forward = torch.compile(gpt.forward)
+    # gpt.normalize = torch.compile(gpt.normalize)
+    # gpt.regularize = torch.compile(gpt.regularize)
+    # init_lr_t = torch.tensor(init_lr, device=device)
 
     # initialize the Adam state
 
@@ -219,9 +222,11 @@ def train(device, ideal_flops_per_sec):
             gpt.regularize(weights, strength = init_lr * schedule * wd)
             weights.zero_grad()
 
-        speed_logger.add(*data.shape, time.time() - t0)
+        # avoid first compile && first recompile
+        if step > 1:
+            speed_logger.add(*data.shape, time.time() - t0)
 
-        if step % log_interval == 0:
+        if step > 1 and step % log_interval == 0:
             tps, mfu = speed_logger.ave()
             print(
                 "step:", step,
