@@ -1,3 +1,7 @@
+## Served docs
+
+The docs are automatically served to [https://jeremybernste.in/modula/](https://jeremybernste.in/modula/).
+
 ## Building the docs locally
 
 To build these docs locally install sphinx with the furo theme:
@@ -6,9 +10,6 @@ pip install sphinx sphinxext-opengraph sphinx-inline-tabs sphinx-autobuild sphin
 ```
 And then do the build:
 ```bash
-make html
-```
-or
-```bash
-make livehtml
+cd docs
+make livedirhtml
 ```
