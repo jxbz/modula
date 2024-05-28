@@ -1,1 +1,4 @@
-furo==2021.11.16
+furo
+sphinx_copybutton
+sphinx_inline_tabs
+sphinxext.opengraph
