@@ -1,12 +1,10 @@
-Atomic modules
-===============
+Bond modules
+=============
 
 .. toctree::
    :hidden:
 
-   linear
-   embed
-   conv2d
+   nonlinearities
 
 .. admonition:: Warning
    :class: warning

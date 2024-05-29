@@ -1,12 +1,10 @@
-Atomic modules
-===============
+Compound modules
+=================
 
 .. toctree::
    :hidden:
 
-   linear
-   embed
-   conv2d
+   gpt
 
 .. admonition:: Warning
    :class: warning

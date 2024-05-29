@@ -1,12 +1,5 @@
-Atomic modules
+Nonlinearities
 ===============
-
-.. toctree::
-   :hidden:
-
-   linear
-   embed
-   conv2d
 
 .. admonition:: Warning
    :class: warning

@@ -1,15 +1,15 @@
 # Configuration file for the Sphinx documentation builder.
 
 # -- Project information -----------------------------------------------------
-project = 'modula'
+project = 'Modula'
 copyright = '2024, modula-authors'
 author = 'modula-authors'
-release = '0.0.0.0.0.2'
 
 # -- General configuration ---------------------------------------------------
 extensions = [
-	'sphinx_copybutton',
+	"sphinx_copybutton",
 	"sphinx_inline_tabs",
+    "sphinx.ext.autodoc",
 	# "sphinxext.opengraph", # todo: configure
 ]
 templates_path = ['_templates']
@@ -23,8 +23,11 @@ html_theme_options = {
     "dark_logo": "logo-dark.svg",
     "sidebar_hide_name": True,
     "navigation_with_keys": True,
-    "announcement": "👷 Under construction 🚧",
-    "top_of_page_buttons": [],
+    # "announcement": "👷 Under construction 🚧",
+    "top_of_page_buttons": ["view", "edit"],
+    "source_repository": "https://github.com/jxbz/modula/",
+    "source_branch": "main",
+    "source_directory": "docs/source/",
     "footer_icons": [
         {
             "name": "GitHub",
