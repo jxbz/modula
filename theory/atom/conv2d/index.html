@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="prev" title="Embedding module" href="../embed/" />
+<link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Bond modules" href="../../bond/" /><link rel="prev" title="Embedding" href="../embed/" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2024.05.06 -->
-        <title>Conv2d module - modula 0.0.0.0.0.2 documentation</title>
+        <title>Conv2d - Modula documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -170,11 +170,7 @@
 
 <a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
-<div class="announcement">
-  <aside class="announcement-content">
-     👷 Under construction 🚧 
-  </aside>
-</div>
+
 
 <div class="page">
   <header class="mobile-header">
@@ -185,7 +181,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../"><div class="brand">modula 0.0.0.0.0.2 documentation</div></a>
+      <a href="../../../"><div class="brand">Modula  documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -220,18 +216,34 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../quickstart/">Quickstart</a></li>
+  <p class="caption" role="heading"><span class="caption-text">Introduction:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../graceful-scaling/">Graceful scaling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../golden-rules/">Golden rules for scaling</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Documentation:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Theory of modules:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../vector/">Vectors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module/">Modules</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../">Atomic modules</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Atomic modules</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../linear/">Linear module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../embed/">Embedding module</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Conv2d module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../linear/">Linear</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../embed/">Embedding</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Conv2d</a></li>
 </ul>
 </li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../bond/">Bond modules</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Bond modules</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../bond/nonlinearities/">Nonlinearities</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../compound/">Compound modules</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Compound modules</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../compound/gpt/">GPT</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Useful links:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/jxbz/modula">Modula codebase</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://arxiv.org/abs/2405.14813">Modula paper</a></li>
 </ul>
 
 </div>
@@ -251,7 +263,17 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          <div class="theme-toggle-container theme-toggle-content">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/jxbz/modula/blob/main/docs/source/theory/atom/conv2d.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/jxbz/modula/edit/main/docs/source/theory/atom/conv2d.rst" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
@@ -266,8 +288,12 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="conv2d-module">
-<h1>Conv2d module<a class="headerlink" href="#conv2d-module" title="Permalink to this heading">¶</a></h1>
+          <section id="conv2d">
+<h1>Conv2d<a class="headerlink" href="#conv2d" title="Permalink to this heading">¶</a></h1>
+<div class="warning admonition">
+<p class="admonition-title">Warning</p>
+<p>This page is still under construction.</p>
+</div>
 </section>
 
         </article>
@@ -275,7 +301,15 @@
       <footer>
         
         <div class="related-pages">
-          
+          <a class="next-page" href="../../bond/">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Bond modules</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
           <a class="prev-page" href="../embed/">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
@@ -283,7 +317,7 @@
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Embedding module</div>
+                <div class="title">Embedding</div>
                 
               </div>
             </a>
@@ -318,7 +352,7 @@
       
     </aside>
   </div>
-</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=8384d40d"></script>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=3b7a7995"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../_static/scripts/furo.js?v=4e2eecee"></script>

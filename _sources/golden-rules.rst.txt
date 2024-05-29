@@ -1,5 +1,5 @@
-Modules
-========
+Golden rules for scaling
+========================
 
 .. admonition:: Warning
    :class: warning

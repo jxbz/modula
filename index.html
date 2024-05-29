@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex/" /><link rel="search" title="Search" href="search/" /><link rel="next" title="Quickstart" href="quickstart/" />
+<link rel="index" title="Index" href="genindex/" /><link rel="search" title="Search" href="search/" /><link rel="next" title="Graceful scaling" href="graceful-scaling/" />
 
     <!-- Generated with Sphinx 7.1.2 and Furo 2024.05.06 -->
-        <title>modula 0.0.0.0.0.2 documentation</title>
+        <title>Modula documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -170,11 +170,7 @@
 
 <a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
-<div class="announcement">
-  <aside class="announcement-content">
-     👷 Under construction 🚧 
-  </aside>
-</div>
+
 
 <div class="page">
   <header class="mobile-header">
@@ -185,7 +181,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="#"><div class="brand">modula 0.0.0.0.0.2 documentation</div></a>
+      <a href="#"><div class="brand">Modula  documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -197,7 +193,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -220,18 +216,34 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
-<li class="toctree-l1"><a class="reference internal" href="quickstart/">Quickstart</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Documentation:</span></p>
+  <p class="caption" role="heading"><span class="caption-text">Introduction:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="graceful-scaling/">Graceful scaling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="golden-rules/">Golden rules for scaling</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Theory of modules:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="theory/vector/">Vectors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="theory/module/">Modules</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="theory/atom/">Atomic modules</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Atomic modules</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="theory/atom/linear/">Linear module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="theory/atom/embed/">Embedding module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="theory/atom/conv2d/">Conv2d module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theory/atom/linear/">Linear</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theory/atom/embed/">Embedding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theory/atom/conv2d/">Conv2d</a></li>
 </ul>
 </li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="theory/bond/">Bond modules</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Bond modules</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="theory/bond/nonlinearities/">Nonlinearities</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="theory/compound/">Compound modules</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Compound modules</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="theory/compound/gpt/">GPT</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Useful links:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/jxbz/modula">Modula codebase</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://arxiv.org/abs/2405.14813">Modula paper</a></li>
 </ul>
 
 </div>
@@ -251,7 +263,17 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          <div class="theme-toggle-container theme-toggle-content">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/jxbz/modula/blob/main/docs/source/index.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/jxbz/modula/edit/main/docs/source/index.rst" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
@@ -260,7 +282,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -268,12 +290,32 @@
         <article role="main" id="furo-main-content">
           <section id="welcome-to-the-modula-docs">
 <h1>Welcome to the Modula docs!<a class="headerlink" href="#welcome-to-the-modula-docs" title="Permalink to this heading">¶</a></h1>
-<p>Modula is a deep learning framework designed for graceful scaling. The user defines a compound module (i.e. neural network) in Modula by arbitrarily composing atom and bond modules (e.g. linear layers and nonlinearities). Modula then automatically normalizes weight updates in the modular norm corresponding to this compound. This leads to automatic learning rate transfer across width, depth and possibly other architectural dimensions. Modula is built on top of <a class="reference external" href="http://pytorch.org">PyTorch</a>.</p>
-<p>Useful links:</p>
-<ul class="simple">
-<li><p><a class="reference external" href="http://github.com/jxbz/modula">Modula codebase</a></p></li>
-<li><p><a class="reference external" href="https://arxiv.org/abs/2405.14813">arXiv paper</a></p></li>
-</ul>
+<p>Modula is a deep learning framework designed for graceful scaling. Neural networks written in Modula automatically transfer learning rate across scale. Modula can be installed by running:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>modula
+</pre></div>
+</div>
+<p>The purpose of these docs is three-fold:</p>
+<ol class="arabic simple">
+<li><p>teach scaling through code;</p></li>
+<li><p>introduce the Modula API;</p></li>
+<li><p>explain how to extend Modula.</p></li>
+</ol>
+<section id="navigating-the-docs">
+<h2>Navigating the docs<a class="headerlink" href="#navigating-the-docs" title="Permalink to this heading">¶</a></h2>
+<p>If you don’t care about Modula and just want to learn how to directly scale training in <a class="reference external" href="https://pytorch.org">PyTorch</a> or <a class="reference external" href="https://github.com/google/jax">JAX</a>, then skip directly to the section on <a class="reference external" href="golden-rules">golden rules for scaling</a>.</p>
+<p>Otherwise, use the <kbd class="kbd docutils literal notranslate">←</kbd> and <kbd class="kbd docutils literal notranslate">→</kbd> arrow keys to jump around the docs.</p>
+</section>
+<section id="academic-paper">
+<h2>Academic paper<a class="headerlink" href="#academic-paper" title="Permalink to this heading">¶</a></h2>
+<p>If you like math better than code, then you might prefer to read <a class="reference external" href="https://arxiv.org/abs/2405.14813">our paper</a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@article</span><span class="p">{</span><span class="n">modula</span><span class="p">,</span>
+  <span class="n">author</span>  <span class="o">=</span> <span class="p">{</span><span class="n">Tim</span> <span class="n">Large</span> <span class="ow">and</span> <span class="n">Yang</span> <span class="n">Liu</span> <span class="ow">and</span> <span class="n">Minyoung</span> <span class="n">Huh</span> <span class="ow">and</span> <span class="n">Hyojin</span> <span class="n">Bahng</span> <span class="ow">and</span> <span class="n">Phillip</span> <span class="n">Isola</span> <span class="ow">and</span> <span class="n">Jeremy</span> <span class="n">Bernstein</span><span class="p">},</span>
+  <span class="n">title</span>   <span class="o">=</span> <span class="p">{</span><span class="n">Scalable</span> <span class="n">Optimization</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">Modular</span> <span class="n">Norm</span><span class="p">},</span>
+  <span class="n">journal</span> <span class="o">=</span> <span class="p">{</span><span class="n">arXiv</span><span class="p">:</span><span class="mf">2405.14813</span><span class="p">},</span>
+  <span class="n">year</span>    <span class="o">=</span> <span class="mi">2024</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 <div class="toctree-wrapper compound">
 </div>
 <div class="toctree-wrapper compound">
@@ -281,18 +323,19 @@
 <div class="toctree-wrapper compound">
 </div>
 </section>
+</section>
 
         </article>
       </div>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="quickstart/">
+          <a class="next-page" href="graceful-scaling/">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Quickstart</div>
+                <div class="title">Graceful scaling</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -322,13 +365,35 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Welcome to the Modula docs!</a><ul>
+<li><a class="reference internal" href="#navigating-the-docs">Navigating the docs</a></li>
+<li><a class="reference internal" href="#academic-paper">Academic paper</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
   </div>
-</div><script data-url_root="#" id="documentation_options" src="_static/documentation_options.js?v=8384d40d"></script>
+</div><script data-url_root="#" id="documentation_options" src="_static/documentation_options.js?v=3b7a7995"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/scripts/furo.js?v=4e2eecee"></script>

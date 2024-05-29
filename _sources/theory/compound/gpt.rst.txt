@@ -1,5 +1,5 @@
-Modules
-========
+GPT
+====
 
 .. admonition:: Warning
    :class: warning

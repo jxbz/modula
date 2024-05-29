@@ -1,4 +1,4 @@
-Modules
+Vectors
 ========
 
 .. admonition:: Warning

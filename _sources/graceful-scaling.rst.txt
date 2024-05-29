@@ -1,5 +1,5 @@
-Modules
-========
+Graceful scaling
+=================
 
 .. admonition:: Warning
    :class: warning
