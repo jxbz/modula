@@ -7,6 +7,9 @@ Modula is a deep learning framework designed for graceful scaling. Neural networ
 
    $ pip install modula
 
+Goals of the docs
+^^^^^^^^^^^^^^^^^^^^
+
 The purpose of these docs is three-fold: 
 
 1. teach scaling through code;
