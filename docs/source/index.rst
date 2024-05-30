@@ -7,7 +7,7 @@ Modula is a deep learning framework designed for graceful scaling. Neural networ
 
    $ pip install modula
 
-Goals of the docs
+Purpose of the docs
 ^^^^^^^^^^^^^^^^^^^^
 
 The purpose of these docs is three-fold: 
@@ -23,8 +23,8 @@ If you don't care about Modula and just want to learn how to directly scale trai
 
 Otherwise, use the :kbd:`←` and :kbd:`→` arrow keys to jump around the docs.
 
-Academic paper
-^^^^^^^^^^^^^^^
+Companion paper
+^^^^^^^^^^^^^^^^
 
 If you like math better than code, then you might prefer to read `our paper <https://arxiv.org/abs/2405.14813>`_:
 
