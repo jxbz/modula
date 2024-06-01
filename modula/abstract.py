@@ -53,11 +53,11 @@ class Module:
 
     def __mul__(self, other):
         assert other != 0, "cannot multiply a module by zero"
-        return self @ ScalarMultiply(other)
+        return self @ Mul(other)
 
     def __rmul__(self, other):
         assert other != 0, "cannot multiply a module by zero"
-        return ScalarMultiply(other) @ self
+        return Mul(other) @ self
 
     def __truediv__(self, other):
         assert other != 0, "cannot divide a module by zero"
@@ -68,7 +68,7 @@ class Module:
         if other > 0:
             return copy.deepcopy(self) @ self ** (other - 1)
         else:
-            return ScalarMultiply(1.0)
+            return Mul(1.0)
 
 
 class CompositeModule(Module):
@@ -147,7 +147,7 @@ class TupleModule(Module):
                 w = Vector(w[child.length:])
 
 
-class ScalarMultiply(Module):
+class Mul(Module):
     def __init__(self, alpha):
         super().__init__()
         self.mass = 0
