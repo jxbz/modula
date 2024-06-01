@@ -18,7 +18,7 @@ pip install modula
 
 Next, let's download the Shakespeare data:
 ```bash
-pip install datasets
+pip install numpy datasets
 python examples/data/shakespeare.py
 ```
 
