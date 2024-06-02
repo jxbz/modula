@@ -8,15 +8,12 @@ jobs:
     permissions:
       contents: write
     steps:
-    - name: Install XKCD font
-      run: |
-        sudo wget -nc https://github.com/ipython/xkcd-font/blob/master/xkcd-script/font/xkcd-script.ttf?raw=true -O /usr/local/share/fonts/xkcd-Script.ttf || true
-        fc-cache -f -v
     - uses: actions/checkout@v4
     - name: Build HTML
       uses: ammaraskar/sphinx-action@master
       with:
         docs-folder: docs/
+        pre-build-command: "sudo wget -nc https://github.com/ipython/xkcd-font/blob/master/xkcd-script/font/xkcd-script.ttf?raw=true -O /usr/local/share/fonts/xkcd-Script.ttf || true; fc-cache -f -v"
         build-command: "sphinx-build -b dirhtml source build"
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
