@@ -6,7 +6,7 @@ The docs are automatically served to [https://jeremybernste.in/modula/](https://
 
 To build these docs locally install sphinx with the furo theme:
 ```bash
-pip install sphinx sphinxext-opengraph sphinx-inline-tabs sphinx-autobuild sphinx-copybutton furo
+pip install sphinx sphinxext-opengraph sphinx-inline-tabs sphinx-autobuild sphinx-copybutton furo matplotlib
 ```
 And then do the build:
 ```bash

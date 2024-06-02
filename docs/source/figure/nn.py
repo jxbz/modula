@@ -49,14 +49,14 @@ def draw_xkcd_neural_net(layers, spacing=3):
     x2, y2 = node_positions[1][-1]
     ax.annotate('', xy=(x1 - spacing - 0.5, y1 + 0.25), xytext=(x1 - 3.5, y2 - 0.25),
                 arrowprops=dict(arrowstyle='<->', color='black', lw=2, mutation_scale=20, zorder=20))
-    ax.text(x1 - spacing - 0.8, (y1+y2)/2, 'width', ha='center', va='center', rotation=90)
+    ax.text(x1 - spacing - 0.8, (y1+y2)/2, 'width', ha='center', va='center', rotation=90, fontsize=SIZE)
 
     # Draw an arrow spanning depth
     x1, y1 = node_positions[0][-1]
     x2, y2 = node_positions[-1][-1]
     ax.annotate('', xy=(x1 - 0.25, y1 - 1.45), xytext=(x2 +0.25, y1 - 1.45),
                 arrowprops=dict(arrowstyle='<->', color='black', lw=2, mutation_scale=20, zorder=20))
-    ax.text((x1+x2)/2, y1-1.85, 'depth', ha='center', va='center')
+    ax.text((x1+x2)/2, y1-1.85, 'depth', ha='center', va='center', fontsize=SIZE)
 
     # Draw the plot
     ax.axis('off')
