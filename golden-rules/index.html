@@ -194,7 +194,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -283,7 +283,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -291,10 +291,39 @@
         <article role="main" id="furo-main-content">
           <section id="golden-rules-for-scaling">
 <h1>Golden rules for scaling<a class="headerlink" href="#golden-rules-for-scaling" title="Permalink to this heading">¶</a></h1>
-<div class="warning admonition">
-<p class="admonition-title">Warning</p>
-<p>This page is still under construction.</p>
+<p>So, you want to scale your training, huh? The good news first: it’s not too difficult, and boils down to a few simple principles and some basic linear algebra. The bad news? It requires unlearning a few concepts you may have been taught in lectures. For example, consider the following principle:</p>
+<blockquote>
+<div><p>Initialize the weights so that all activations have unit variance at initialization.</p>
+<p class="attribution">—Deep Learning 101</p>
+</div></blockquote>
+<p>This turns out to be bad for scaling. Why? Because the network internals can behave quite differently at initialization compared to after a few steps of training. A good way to understand this point is to consider a simple linear layer.</p>
+<section id="the-linear-layer">
+<h2>The linear layer<a class="headerlink" href="#the-linear-layer" title="Permalink to this heading">¶</a></h2>
+<p>Consider a simple linear layer with initialization scale <code class="docutils literal notranslate"><span class="pre">sigma</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Linear</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">fan_out</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> <span class="n">fan_in</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> <span class="n">sigma</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">sigma</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">fan_out</span><span class="p">,</span> <span class="n">fan_in</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+</pre></div>
 </div>
+<p>Suppose that we are dealing with the output layer of a classifier, and we want to scale up <code class="docutils literal notranslate"><span class="pre">fan_in</span></code> while holding <code class="docutils literal notranslate"><span class="pre">fan_out</span></code> fixed. Then an important fact about <code class="code highlight python docutils literal highlight-python"><span class="bp">self</span><span class="o">.</span><span class="n">weight</span></code> is that it has a huge null space of dimension <code class="docutils literal notranslate"><span class="pre">fan_out</span> <span class="pre">-</span> <span class="pre">fan_in</span></code>. (The null space is the set of inputs that get mapped to zero). At initialization, most of an input <code class="docutils literal notranslate"><span class="pre">x</span></code> will overlap with this nullspace. This means that to get the output of <code class="code highlight python docutils literal highlight-python"><span class="bp">self</span><span class="o">.</span><span class="n">forward</span></code> to have unit variance at initialization, you need to pick a huge initialization scale <code class="docutils literal notranslate"><span class="pre">sigma</span></code>. But after a few steps of training, the situation changes. Gradient descent causes the input <code class="docutils literal notranslate"><span class="pre">x</span></code> to align with the non-null space of <code class="docutils literal notranslate"><span class="pre">self.weight</span></code>. The <code class="docutils literal notranslate"><span class="pre">sigma</span></code> you chose to control the activations at initialization is now far too large in hindsight!</p>
+</section>
+<section id="the-golden-rules">
+<h2>The golden rules<a class="headerlink" href="#the-golden-rules" title="Permalink to this heading">¶</a></h2>
+<p>The example in the previous section illustrates a style of thinking that extends far beyond linear layers. Let’s distill it into two key principles, which we call the “golden rules” of scaling.</p>
+<blockquote>
+<div><p>🌟 Gradient descent causes layer inputs to align with the largest singular value components of weight matrices. Therefore, design the architecture and initialize the weight matrices under the assumption that inputs will align with the largest singular value components of all matrices.</p>
+<p>🌟 The largest singular value components of gradient updates align with layer inputs. Therefore, normalize gradient updates under the assumption that their largest singular value components will align with inputs at all layers.</p>
+</div></blockquote>
+<p>It’s worth expanding a little on what we mean by <em>alignment</em> here. When we say that an input <code class="docutils literal notranslate"><span class="pre">x</span></code> aligns with a weight matrix <code class="docutils literal notranslate"><span class="pre">weight</span></code>, we mean that if we compute <code class="docutils literal notranslate"><span class="pre">U,</span> <span class="pre">S,</span> <span class="pre">V</span> <span class="pre">=</span> <span class="pre">torch.linalg.svd(weight)</span></code>, then the input <code class="docutils literal notranslate"><span class="pre">x</span></code> will tend to have a larger dot product with the rows of <code class="docutils literal notranslate"><span class="pre">V</span></code> that correspond to larger diagonal entries of the singular value matrix <code class="docutils literal notranslate"><span class="pre">S</span></code>.</p>
+</section>
+<section id="applying-the-rules">
+<h2>Applying the rules<a class="headerlink" href="#applying-the-rules" title="Permalink to this heading">¶</a></h2>
+<p>Now, let’s apply the golden rules to understand how to do width scaling, depth scaling. This should already be enough for you to get started scaling a GPT.</p>
+</section>
 </section>
 
         </article>
@@ -347,8 +376,29 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Golden rules for scaling</a><ul>
+<li><a class="reference internal" href="#the-linear-layer">The linear layer</a></li>
+<li><a class="reference internal" href="#the-golden-rules">The golden rules</a></li>
+<li><a class="reference internal" href="#applying-the-rules">Applying the rules</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
