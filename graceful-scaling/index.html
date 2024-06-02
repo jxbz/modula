@@ -11,6 +11,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
@@ -295,17 +296,19 @@
 <p>This page is still under construction.</p>
 </div>
 <p>At the simplest level, neural networks are trained by iterating the following operation:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">weights</span> <span class="o">-=</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">gradient_of_loss</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">weights</span> <span class="o">-=</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">gradient</span>
 </pre></div>
 </div>
-<p>where <code class="code highlight python docutils literal highlight-python"><span class="n">learning_rate</span></code> is a <code class="code highlight python docutils literal highlight-python"><span class="nb">float</span></code> and <code class="code highlight python docutils literal highlight-python"><span class="n">gradient_of_loss</span></code> is the gradient of the loss function with respect to its <code class="code highlight python docutils literal highlight-python"><span class="n">weights</span></code>. Of course, in practice, we may want to use additional tricks such as momentum, but let’s ignore details like that for now.</p>
+<p>where <code class="code highlight python docutils literal highlight-python"><span class="n">learning_rate</span></code> is a <code class="code highlight python docutils literal highlight-python"><span class="nb">float</span></code> and <code class="code highlight python docutils literal highlight-python"><span class="n">gradient</span></code> is the gradient of the loss function with respect to the <code class="code highlight python docutils literal highlight-python"><span class="n">weights</span></code> of the neural net. Of course, in practice, we may want to use additional tricks such as momentum, but let’s ignore details like that for now.</p>
 <p>Unfortunately, this simple “gradient descent” operation does not scale well if we scale up the network architecture. What does this mean? Consider “growing” the network by increasing the <em>width</em> (the number of neurons in a layer) or the <em>depth</em> (the number of layers):</p>
-<p><code class="docutils literal notranslate"><span class="pre">&lt;insert</span> <span class="pre">figure&gt;</span></code></p>
+<figure class="align-default">
+<img alt="../_images/nn.svg" class="plot-directive" src="../_images/nn.svg" /></figure>
 <p>Then gradient descent training can break in two different ways:</p>
-<p><code class="docutils literal notranslate"><span class="pre">&lt;insert</span> <span class="pre">figure&gt;</span></code></p>
+<figure class="align-default">
+<img alt="../_images/sweeps.svg" class="plot-directive" src="../_images/sweeps.svg" /></figure>
 <p>The picture on the left shows the optimal learning rate <em>drifting</em> as we scale up the width of the network. The picture on the right shows performance <em>getting worse</em> as we scale up the depth of the network.</p>
 <p>It turns out that we can solve these problems by defining a special <code class="code highlight python docutils literal highlight-python"><span class="n">normalize</span></code> function which acts on gradients, leading to a new “normalized” gradient descent algorithm:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">weights</span> <span class="o">-=</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">normalize</span><span class="p">(</span><span class="n">gradient_of_loss</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">weights</span> <span class="o">-=</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">normalize</span><span class="p">(</span><span class="n">gradient</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Modula automatically infers the required normalize function from the architecture of the network. So the user can focus on writing their neural network architecture while Modula will handle properly normalizing the training. These docs are intended to explain how Modula works and also introduce the Modula API.</p>
