@@ -10,8 +10,7 @@ jobs:
     steps:
     - name: Install XKCD font
       run: |
-        mkdir -p /usr/local/share/fonts
-        wget -nc https://github.com/ipython/xkcd-font/blob/master/xkcd-script/font/xkcd-script.ttf?raw=true -O /usr/local/share/fonts/xkcd-Script.ttf || true
+        sudo wget -nc https://github.com/ipython/xkcd-font/blob/master/xkcd-script/font/xkcd-script.ttf?raw=true -O /usr/local/share/fonts/xkcd-Script.ttf || true
         fc-cache -f -v
     - uses: actions/checkout@v4
     - name: Build HTML
