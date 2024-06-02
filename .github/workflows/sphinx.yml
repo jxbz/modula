@@ -10,10 +10,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build HTML
-      uses: ammaraskar/sphinx-action@master
+      uses: ammaraskar/sphinx-action@7.0.0
       with:
         docs-folder: docs/
-        pre-build-command: "wget -nc https://github.com/ipython/xkcd-font/blob/master/xkcd-script/font/xkcd-script.ttf?raw=true -O /usr/local/share/fonts/xkcd-Script.ttf || true; fc-cache -f -v"
+        pre-build-command: "apt-get update -y && apt-get install -y wget && wget -nc https://github.com/ipython/xkcd-font/blob/master/xkcd-script/font/xkcd-script.ttf?raw=true -O /usr/local/share/fonts/xkcd-Script.ttf || true; fc-cache -f -v"
         build-command: "sphinx-build -b dirhtml source build"
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
