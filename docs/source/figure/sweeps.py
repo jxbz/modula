@@ -27,6 +27,7 @@ def draw_xkcd_training_loss_plots():
     learning_rates = np.linspace(0, 1, 400)  # Use a linear range for learning rates
     widths = [2**i for i in range(5, 11)]
     colors = plt.cm.viridis(np.linspace(0, 1, len(widths)))
+    optima_list = []
     
     for width, color in zip(widths, colors):
         # Generate a quadratic U-shaped curve for each width
@@ -35,6 +36,9 @@ def draw_xkcd_training_loss_plots():
         # Increase the drift of the minimum left
         drift = np.log2(width)
         shifted_learning_rates = learning_rates - drift / 10
+
+        min_idx = np.argmin(training_loss)
+        optima_list.append((shifted_learning_rates[min_idx], training_loss[min_idx]))
         
         axes[0].plot(shifted_learning_rates, training_loss, label=f'{width}', color=color)
     
@@ -52,14 +56,23 @@ def draw_xkcd_training_loss_plots():
     axes[0].set_xticklabels([])  # Remove x tick labels
     axes[0].set_yticklabels([])  # Remove y tick labels
     axes[0].patch.set_alpha(0)  # Remove the subplot background
+
+    x0, y0 = optima_list[-1]
+    x1, y1 = optima_list[0]
+    axes[0].annotate('', xy=(x0, y0), xytext=(x1, y1),
+                arrowprops=dict(arrowstyle='->', color='red', lw=4, mutation_scale=20, zorder=20))
     
     # Data for the right plot (varying depth)
     depths = [2**i for i in range(5, 11)]
     colors = plt.cm.viridis(np.linspace(0, 1, len(depths)))
+    optima_list = []
     
     for depth, color in zip(depths, colors):
         # Generate a quadratic U-shaped curve for each depth with larger loss for deeper networks
         training_loss = (learning_rates - 0.3)**2 + np.log2(depth) / 10  # Example quadratic curve with larger loss for deeper networks
+
+        min_idx = np.argmin(training_loss)
+        optima_list.append((learning_rates[min_idx], training_loss[min_idx]))
         
         axes[1].plot(learning_rates, training_loss, label=f'{depth}', color=color)
     
@@ -77,6 +90,11 @@ def draw_xkcd_training_loss_plots():
     axes[1].set_xticklabels([])  # Remove x tick labels
     axes[1].set_yticklabels([])  # Remove y tick labels
     axes[1].patch.set_alpha(0)  # Remove the subplot background
+
+    x0, y0 = optima_list[-1]
+    x1, y1 = optima_list[0]
+    axes[1].annotate('', xy=(x0, y0), xytext=(x1, y1),
+                arrowprops=dict(arrowstyle='->', color='red', lw=4, mutation_scale=20, zorder=20))
     
     plt.subplots_adjust(left=0.04, bottom=None, right=0.88, top=None, wspace=0.8, hspace=None)
     plt.show()
