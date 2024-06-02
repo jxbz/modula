@@ -10,6 +10,7 @@ extensions = [
 	"sphinx_copybutton",
 	"sphinx_inline_tabs",
     "sphinx.ext.autodoc",
+    "matplotlib.sphinxext.plot_directive",
 	# "sphinxext.opengraph", # todo: configure
 ]
 templates_path = ['_templates']
@@ -18,6 +19,11 @@ rst_prolog = """.. role:: python(code)
                     :language: python
                     :class: highlight
              """
+
+plot_html_show_formats = False
+plot_html_show_source_link = False
+plot_formats = ['svg']
+
 
 # -- Options for HTML output -------------------------------------------------
 html_theme = 'furo'
