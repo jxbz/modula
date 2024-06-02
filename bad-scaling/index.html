@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex/" /><link rel="search" title="Search" href="../search/" /><link rel="next" title="Golden rules for scaling" href="../golden-rules/" /><link rel="prev" title="Welcome to the Modula docs!" href="../" />
 
     <!-- Generated with Sphinx 7.0.0 and Furo 2024.05.06 -->
-        <title>Graceful scaling - Modula documentation</title>
+        <title>Bad scaling - Modula documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=7eec22261a5d8917218cec534344987d69e122f4" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -219,7 +219,7 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Introduction:</span></p>
 <ul class="current">
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Graceful scaling</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Bad scaling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../golden-rules/">Golden rules for scaling</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Theory of modules:</span></p>
@@ -265,12 +265,12 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="https://github.com/jxbz/modula/blob/main/docs/source/graceful-scaling.rst?plain=true" title="View this page">
+  <a class="muted-link" href="https://github.com/jxbz/modula/blob/main/docs/source/bad-scaling.rst?plain=true" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
 </div><div class="edit-this-page">
-  <a class="muted-link" href="https://github.com/jxbz/modula/edit/main/docs/source/graceful-scaling.rst" title="Edit this page">
+  <a class="muted-link" href="https://github.com/jxbz/modula/edit/main/docs/source/bad-scaling.rst" title="Edit this page">
     <svg><use href="#svg-pencil"></use></svg>
     <span class="visually-hidden">Edit this page</span>
   </a>
@@ -289,30 +289,29 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="graceful-scaling">
-<h1>Graceful scaling<a class="headerlink" href="#graceful-scaling" title="Permalink to this heading">¶</a></h1>
-<div class="warning admonition">
-<p class="admonition-title">Warning</p>
-<p>This page is still under construction.</p>
-</div>
+          <section id="bad-scaling">
+<h1>Bad scaling<a class="headerlink" href="#bad-scaling" title="Permalink to this heading">¶</a></h1>
 <p>At the simplest level, neural networks are trained by iterating the following operation:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">weights</span> <span class="o">-=</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">gradient</span>
 </pre></div>
 </div>
-<p>where <code class="code highlight python docutils literal highlight-python"><span class="n">learning_rate</span></code> is a <code class="code highlight python docutils literal highlight-python"><span class="nb">float</span></code> and <code class="code highlight python docutils literal highlight-python"><span class="n">gradient</span></code> is the gradient of the loss function with respect to the <code class="code highlight python docutils literal highlight-python"><span class="n">weights</span></code> of the neural net. Of course, in practice, we may want to use additional tricks such as momentum, but let’s ignore details like that for now.</p>
-<p>Unfortunately, this simple “gradient descent” operation does not scale well if we scale up the network architecture. What does this mean? Consider “growing” the network by increasing the <em>width</em> (the number of neurons in a layer) or the <em>depth</em> (the number of layers):</p>
+<p>where <code class="code highlight python docutils literal highlight-python"><span class="n">learning_rate</span></code> is a <code class="code highlight python docutils literal highlight-python"><span class="nb">float</span></code> and <code class="code highlight python docutils literal highlight-python"><span class="n">gradient</span></code> is the gradient of the loss function with respect to the <code class="code highlight python docutils literal highlight-python"><span class="n">weights</span></code> of the network. Of course, in practice, we may want to use additional tricks such as momentum, but let’s ignore details like that for now.</p>
+<p>Unfortunately, this simple “gradient descent” operation does not scale well if we scale up the network architecture. What does this mean? Suppose that, before training, we “grow” the network by increasing its <em>width</em> (the number of neurons in a layer) or its <em>depth</em> (the number of layers):</p>
 <figure class="align-default">
 <img alt="../_images/nn.svg" class="plot-directive" src="../_images/nn.svg" /></figure>
-<p>Then gradient descent training can break in two different ways:</p>
-<figure class="align-default">
-<img alt="../_images/sweeps.svg" class="plot-directive" src="../_images/sweeps.svg" /></figure>
-<p>The picture on the left shows the optimal learning rate <em>drifting</em> as we scale up the width of the network. The picture on the right shows performance <em>getting worse</em> as we scale up the depth of the network.</p>
-<p>It turns out that we can solve these problems by defining a special <code class="code highlight python docutils literal highlight-python"><span class="n">normalize</span></code> function which acts on gradients, leading to a new “normalized” gradient descent algorithm:</p>
+<p>In practice, we might like to grow other dimensions such as the number of residual blocks in a transformer, but let’s stick with this simplified picture for now.</p>
+<p>Under these scaling operations, gradient descent training can break in two main ways. The first problem is that the optimal learning rate can <em>drift</em> as we scale certain dimensions. This is a problem because it means we need to re-tune the learning rate as we scale things up—which is expensive and time-consuming. The second problem is that sometimes performance can actually get worse as we grow the network, even if the optimal learning rate remains stable. This is a problem because we grew the network hoping to make performance better, not worse!</p>
+<figure class="align-default" id="id1">
+<img alt="../_images/sweeps.svg" class="plot-directive" src="../_images/sweeps.svg" /><figcaption>
+<p><span class="caption-text">These cartoons illustrate typical bad scaling behaviours. On the left, the optimal learning rate drifts with increasing width. On the right, performance deteriorates with increasing depth.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>The good news is that we have now developed machinery that largely solves these scaling woes. It turns out that much of the problem can be solved by defining a special <code class="code highlight python docutils literal highlight-python"><span class="n">normalize</span></code> function which acts on gradients, leading to a new “normalized” gradient descent algorithm:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">weights</span> <span class="o">-=</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">normalize</span><span class="p">(</span><span class="n">gradient</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Modula automatically infers the required normalize function from the architecture of the network. So the user can focus on writing their neural network architecture while Modula will handle properly normalizing the training. These docs are intended to explain how Modula works and also introduce the Modula API.</p>
-<p>In case you don’t care about Modula and automatic normalization, the next section will explain how you can normalize training manually in a different framework like <a class="reference external" href="https://pytorch.org">PyTorch</a> or <a class="reference external" href="https://github.com/google/jax">JAX</a>.</p>
+<p>This gradient normalization <em>removes drift</em> in the optimal learning rate, and causes performance to <em>improve</em> with increasing scale. Modula automatically infers the normalize function from the architecture of the network. So the user can focus on writing their neural network architecture while Modula will handle properly normalizing the training.</p>
+<p>These docs are intended to explain how Modula works and also introduce the Modula API. In case you don’t care about Modula or automatic gradient normalization, the next section will explain how you can normalize training manually in a different framework like <a class="reference external" href="https://pytorch.org">PyTorch</a> or <a class="reference external" href="https://github.com/google/jax">JAX</a>.</p>
 </section>
 
         </article>

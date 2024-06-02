@@ -42,7 +42,7 @@ If you like math better than code, then you might prefer to read `our paper <htt
    :maxdepth: 2
    :caption: Introduction:
 
-   graceful-scaling
+   bad-scaling
    golden-rules
 
 .. toctree::
