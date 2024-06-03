@@ -22,7 +22,7 @@ rst_prolog = """.. role:: python(code)
 
 # -- Opengraph ---------------------------------------------------------------
 ogp_site_url = "https://jeremybernste.in/modula/"
-ogp_image = "https://jeremybernste.in/modula/_static/logo-dark.svg"
+ogp_image = "https://jeremybernste.in/modula/_static/logo-square.jpeg"
 
 # -- Matplotlib --------------------------------------------------------------
 plot_html_show_formats = False
