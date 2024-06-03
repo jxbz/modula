@@ -1,0 +1,8 @@
+ul.starlist {
+    list-style-type: "🌟  ";
+    margin-bottom: -5px;
+}
+
+ul.starlist li {
+    margin-bottom: 15px;
+}

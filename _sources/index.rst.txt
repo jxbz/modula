@@ -44,6 +44,7 @@ If you like math better than code, then you might prefer to read `our paper <htt
 
    bad-scaling
    golden-rules
+   history
 
 .. toctree::
    :hidden:

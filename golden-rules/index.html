@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../genindex/" /><link rel="search" title="Search" href="../search/" /><link rel="next" title="Vectors" href="../theory/vector/" /><link rel="prev" title="Bad scaling" href="../bad-scaling/" />
+<link rel="index" title="Index" href="../genindex/" /><link rel="search" title="Search" href="../search/" /><link rel="next" title="History of the science" href="../history/" /><link rel="prev" title="Bad scaling" href="../bad-scaling/" />
 
     <!-- Generated with Sphinx 7.0.0 and Furo 2024.05.06 -->
         <title>Golden rules for scaling - Modula documentation</title>
@@ -13,6 +13,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
     
     
 
@@ -221,6 +222,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../bad-scaling/">Bad scaling</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Golden rules for scaling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../history/">History of the science</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Theory of modules:</span></p>
 <ul>
@@ -299,30 +301,97 @@
 <p>This turns out to be bad for scaling. Why? Because the network internals can behave quite differently at initialization compared to after a few steps of training. A good way to understand this point is to consider a simple linear layer.</p>
 <section id="the-linear-layer">
 <h2>The linear layer<a class="headerlink" href="#the-linear-layer" title="Permalink to this heading">¶</a></h2>
-<p>Consider a simple linear layer with initialization scale <code class="docutils literal notranslate"><span class="pre">sigma</span></code>:</p>
+<p>Consider a linear layer with initialization scale <code class="docutils literal notranslate"><span class="pre">sigma</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Linear</span><span class="p">:</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">fan_out</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> <span class="n">fan_in</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> <span class="n">sigma</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fan_out</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> <span class="n">fan_in</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> <span class="n">sigma</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">sigma</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">fan_out</span><span class="p">,</span> <span class="n">fan_in</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Suppose that we are dealing with the output layer of a classifier, and we want to scale up <code class="docutils literal notranslate"><span class="pre">fan_in</span></code> while holding <code class="docutils literal notranslate"><span class="pre">fan_out</span></code> fixed. Then an important fact about <code class="code highlight python docutils literal highlight-python"><span class="bp">self</span><span class="o">.</span><span class="n">weight</span></code> is that it has a huge null space of dimension <code class="docutils literal notranslate"><span class="pre">fan_out</span> <span class="pre">-</span> <span class="pre">fan_in</span></code>. (The null space is the set of inputs that get mapped to zero). At initialization, most of an input <code class="docutils literal notranslate"><span class="pre">x</span></code> will overlap with this nullspace. This means that to get the output of <code class="code highlight python docutils literal highlight-python"><span class="bp">self</span><span class="o">.</span><span class="n">forward</span></code> to have unit variance at initialization, you need to pick a huge initialization scale <code class="docutils literal notranslate"><span class="pre">sigma</span></code>. But after a few steps of training, the situation changes. Gradient descent causes the input <code class="docutils literal notranslate"><span class="pre">x</span></code> to align with the non-null space of <code class="docutils literal notranslate"><span class="pre">self.weight</span></code>. The <code class="docutils literal notranslate"><span class="pre">sigma</span></code> you chose to control the activations at initialization is now far too large in hindsight!</p>
+<p>Suppose we are dealing with the final linear layer of a classifier, and we want to scale up <code class="docutils literal notranslate"><span class="pre">fan_in</span></code> while holding <code class="docutils literal notranslate"><span class="pre">fan_out</span></code> fixed. Then an important fact about <code class="code highlight python docutils literal highlight-python"><span class="bp">self</span><span class="o">.</span><span class="n">weight</span></code> is that it has a huge null space <a class="footnote-reference brackets" href="#null" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> of dimension <code class="docutils literal notranslate"><span class="pre">fan_out</span> <span class="pre">-</span> <span class="pre">fan_in</span></code>. At initialization, most of a fixed input <code class="docutils literal notranslate"><span class="pre">x</span></code> will lie in this nullspace. This means that to get the output of <code class="code highlight python docutils literal highlight-python"><span class="bp">self</span><span class="o">.</span><span class="n">forward</span></code> to have unit variance at initialization, you need to pick a huge initialization scale <code class="docutils literal notranslate"><span class="pre">sigma</span></code> in order to scale up the part of <code class="docutils literal notranslate"><span class="pre">x</span></code> that does not lie in the null space. But after a few steps of training, the situation changes. Gradient descent will cause the input <code class="docutils literal notranslate"><span class="pre">x</span></code> to align with the non-null space of <code class="docutils literal notranslate"><span class="pre">self.weight</span></code>. This means that the <code class="docutils literal notranslate"><span class="pre">sigma</span></code> you chose to control the activations at initialization is now far too large in hindsight!</p>
 </section>
-<section id="two-golden-rules">
-<h2>Two golden rules<a class="headerlink" href="#two-golden-rules" title="Permalink to this heading">¶</a></h2>
-<p>The example in the previous section illustrates a style of thinking that extends far beyond linear layers. Let’s distill it into two key principles, which we call the “golden rules” of scaling.</p>
+<section id="three-golden-rules">
+<h2>Three golden rules<a class="headerlink" href="#three-golden-rules" title="Permalink to this heading">¶</a></h2>
+<p>The example in the previous section illustrates a style of thinking that extends far beyond linear layers. Let’s distill it into three key tenets, which we call the “golden rules” of scaling:</p>
 <blockquote>
-<div><p>🌟 Gradient descent causes layer inputs to align with the largest singular value components of weight matrices. Therefore, design the architecture and initialize the weight matrices under the assumption that inputs will align with the largest singular value components of all matrices.</p>
-<p>🌟 The largest singular value components of gradient updates align with layer inputs. Therefore, normalize gradient updates under the assumption that their largest singular value components will align with inputs at all layers.</p>
+<div><ul class="starlist simple">
+<li><p>Gradient descent causes inputs to align with the largest spectral components of tensors. So when initializing tensors, carefully set their largest spectral components.</p></li>
+<li><p>The largest spectral components of gradient updates align with tensor inputs. So it is important to normalize gradient updates to control the size of their largest spectral components.</p></li>
+<li><p>All layers will align during training. Keep this in mind when designing the architecture.</p></li>
+</ul>
 </div></blockquote>
 <p>It’s worth expanding a little on what we mean by <em>alignment</em> here. When we say that an input <code class="docutils literal notranslate"><span class="pre">x</span></code> aligns with a weight matrix <code class="docutils literal notranslate"><span class="pre">weight</span></code>, we mean that if we compute <code class="docutils literal notranslate"><span class="pre">U,</span> <span class="pre">S,</span> <span class="pre">V</span> <span class="pre">=</span> <span class="pre">torch.linalg.svd(weight)</span></code>, then the input <code class="docutils literal notranslate"><span class="pre">x</span></code> will tend to have a larger dot product with the rows of <code class="docutils literal notranslate"><span class="pre">V</span></code> that correspond to larger diagonal entries of the singular value matrix <code class="docutils literal notranslate"><span class="pre">S</span></code>.</p>
+<p>The remainder of this section will show how to apply the golden rules to do width scaling, depth scaling, and key-query dot product scaling. This should already be enough for you to get started scaling a GPT.</p>
 </section>
-<section id="applying-the-rules">
-<h2>Applying the rules<a class="headerlink" href="#applying-the-rules" title="Permalink to this heading">¶</a></h2>
-<p>Now, let’s apply the golden rules to understand how to do width scaling, depth scaling, and key-query dot product scaling. This should already be enough for you to get started scaling a GPT.</p>
+<section id="fixing-width-scaling">
+<h2>Fixing width scaling<a class="headerlink" href="#fixing-width-scaling" title="Permalink to this heading">¶</a></h2>
+<p>First, let’s do width scaling in a linear layer. When the network has trained for a few steps to reach its fully aligned state, we want the input and output activations to fall roughly in the interval [-1, 1]. Applying the first golden rule, this tells us that the top singular values of the linear layer need to be around <code class="code highlight python docutils literal highlight-python"><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">fan_out</span> <span class="o">/</span> <span class="n">fan_in</span><span class="p">)</span></code> in magnitude. Intuitively, this is a “conversion factor” that turns a <code class="docutils literal notranslate"><span class="pre">fan_in</span></code>-dimensional vector with order one entries to a <code class="docutils literal notranslate"><span class="pre">fan_out</span></code>-dimensional vector with order one entries.</p>
+<p>In fact we can be a little more clever here and reparameterize the linear layer as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ReparameterizedLinear</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fan_out</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> <span class="n">fan_in</span><span class="p">:</span><span class="nb">int</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">fan_out</span> <span class="o">/</span> <span class="n">fan_in</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">fan_out</span><span class="p">,</span> <span class="n">fan_in</span><span class="p">)</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">orthogonal_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>By including the dimensional conversion factor <code class="code highlight python docutils literal highlight-python"><span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">fan_out</span> <span class="o">/</span> <span class="n">fan_in</span><span class="p">)</span></code> in the forward function, we can now initialize <code class="code highlight python docutils literal highlight-python"><span class="bp">self</span><span class="o">.</span><span class="n">weight</span></code> to have order one singular values. Orthogonal init is a simple and interpretable way to do this—it makes all the singular values exactly one! In our experiments, we have found this parameterization and initialization to be performant without needing any hyperparameters. We use this style of reparameterized forward function in all Modula atomics.</p>
+<p>As for training, we want gradient updates to be as large as possible without blowing up the outputs. By the second golden rule, this implies that we want the gradient updates to have singular values that are again order one. A simple way to achieve this is to just directly spectrally normalize <a class="footnote-reference brackets" href="#spectralnorm" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> the updates:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">-=</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">grad</span> <span class="o">/</span> <span class="n">spectral_norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">grad</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In practice, you may want to replace <code class="code highlight python docutils literal highlight-python"><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">grad</span></code> with some kind of momentum or Adam expression. And the learning rate can optionally decay through the course of training.</p>
+</section>
+<section id="fixing-depth-scaling">
+<h2>Fixing depth scaling<a class="headerlink" href="#fixing-depth-scaling" title="Permalink to this heading">¶</a></h2>
+<p>For depth scaling, we will look at scaling the number of blocks in a residual network <a class="footnote-reference brackets" href="#mlp" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> of the form:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">resnet</span><span class="p">(</span><span class="n">x</span><span class="p">:</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">layer_list</span><span class="p">:</span><span class="nb">list</span><span class="p">,</span> <span class="n">block_multiplier</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>
+
+    <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">layer_list</span><span class="p">:</span>
+
+        <span class="n">x</span> <span class="o">+=</span> <span class="n">block_multiplier</span> <span class="o">*</span> <span class="n">layer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+</div>
+<p>We call this a residual network because at each iteration of the <code class="code highlight python docutils literal highlight-python"><span class="k">for</span></code> loop, a small “residue” is added to the input, which takes the form of a neural network <code class="docutils literal notranslate"><span class="pre">layer</span></code> applied to the output from the previous iteration. The <code class="docutils literal notranslate"><span class="pre">block_multiplier</span></code> can be used to ensure that the residue is small, allowing us to make the residual network very, very deep. The main questions are:</p>
+<ul class="simple">
+<li><p>What kind of layers are we allowed to include in the <code class="docutils literal notranslate"><span class="pre">layer_list</span></code>?</p></li>
+<li><p>What value should we choose for the <code class="docutils literal notranslate"><span class="pre">block_multiplier</span></code>?</p></li>
+</ul>
+<p>The third golden rule makes answering these questions easy. If we design each <code class="docutils literal notranslate"><span class="pre">layer</span></code> in <code class="docutils literal notranslate"><span class="pre">layer_list</span></code> in accordance with the golden rules <a class="footnote-reference brackets" href="#modula" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>, then we should set <code class="code highlight python docutils literal highlight-python"><span class="n">block_multiplier</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">layer_list</span><span class="p">)</span></code>. This is because each layer will add a contribution to the output, and there are <code class="code highlight python docutils literal highlight-python"><span class="nb">len</span><span class="p">(</span><span class="n">layer_list</span><span class="p">)</span></code> layers in total. Since we are assuming that all layers align by the third golden rule, we should divide each contribution by <code class="code highlight python docutils literal highlight-python"><span class="nb">len</span><span class="p">(</span><span class="n">layer_list</span><span class="p">)</span></code> in order to ensure that the output does not blow up.</p>
+<p>This is similar to an idea you may have seen in math that <span class="math notranslate nohighlight">\((1+\frac{1}{L})^L &lt; \mathrm{e}\)</span> for any <span class="math notranslate nohighlight">\(L&gt;0\)</span>. Even though the product may involve a large number <span class="math notranslate nohighlight">\(L\)</span> of terms, the residue <span class="math notranslate nohighlight">\(1/L\)</span> is small enough to prevent the product blowing up. Linking the analogy back to neural nets, <span class="math notranslate nohighlight">\(L\)</span> plays the role of <code class="code highlight python docutils literal highlight-python"><span class="nb">len</span><span class="p">(</span><span class="n">layer_list</span><span class="p">)</span></code>.</p>
+</section>
+<section id="fixing-key-query-dot-product-scaling">
+<h2>Fixing key-query dot product scaling<a class="headerlink" href="#fixing-key-query-dot-product-scaling" title="Permalink to this heading">¶</a></h2>
+<div class="warning admonition">
+<p class="admonition-title">Warning</p>
+<p>This section is still under construction.</p>
+</div>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="null" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>The null space of a linear layer is the set of inputs that get mapped to zero.</p>
+</aside>
+<aside class="footnote brackets" id="spectralnorm" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>The spectral norm of a matrix is the largest singular value. The largest singular value of <code class="code highlight python docutils literal highlight-python"><span class="n">matrix</span> <span class="o">/</span> <span class="n">spectral_norm</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span></code> is always one, so long as <code class="code highlight python docutils literal highlight-python"><span class="n">matrix</span> <span class="o">!=</span> <span class="mi">0</span></code>.</p>
+</aside>
+<aside class="footnote brackets" id="mlp" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
+<p>We study residual networks over MLPs because MLPs seem to just work bad beyond depth 10 or so. In the Modula paper, we show that the type of residual networks we propose are in fact “smooth” even in the limit of infinitely many blocks. The same property does not hold for MLPs to the best of our knowledge.</p>
+</aside>
+<aside class="footnote brackets" id="modula" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">4</a><span class="fn-bracket">]</span></span>
+<p>The fact that this smells like a recursive statement was part of the inspiration for Modula.</p>
+</aside>
+</aside>
 </section>
 </section>
 
@@ -331,12 +400,12 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../theory/vector/">
+          <a class="next-page" href="../history/">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Vectors</div>
+                <div class="title">History of the science</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -390,8 +459,10 @@
             <ul>
 <li><a class="reference internal" href="#">Golden rules for scaling</a><ul>
 <li><a class="reference internal" href="#the-linear-layer">The linear layer</a></li>
-<li><a class="reference internal" href="#two-golden-rules">Two golden rules</a></li>
-<li><a class="reference internal" href="#applying-the-rules">Applying the rules</a></li>
+<li><a class="reference internal" href="#three-golden-rules">Three golden rules</a></li>
+<li><a class="reference internal" href="#fixing-width-scaling">Fixing width scaling</a></li>
+<li><a class="reference internal" href="#fixing-depth-scaling">Fixing depth scaling</a></li>
+<li><a class="reference internal" href="#fixing-key-query-dot-product-scaling">Fixing key-query dot product scaling</a></li>
 </ul>
 </li>
 </ul>
@@ -410,5 +481,6 @@
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <script src="../_static/tabs.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>
