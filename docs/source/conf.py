@@ -11,7 +11,7 @@ extensions = [
 	"sphinx_inline_tabs",
     "sphinx.ext.autodoc",
     "matplotlib.sphinxext.plot_directive",
-	# "sphinxext.opengraph", # todo: configure
+	"sphinxext.opengraph"
 ]
 templates_path = ['_templates']
 exclude_patterns = []
@@ -20,10 +20,14 @@ rst_prolog = """.. role:: python(code)
                     :class: highlight
              """
 
+# -- Opengraph ---------------------------------------------------------------
+ogp_site_url = "https://jeremybernste.in/modula/"
+ogp_image = "https://jeremybernste.in/modula/_static/logo-dark.svg"
+
+# -- Matplotlib --------------------------------------------------------------
 plot_html_show_formats = False
 plot_html_show_source_link = False
 plot_formats = ['svg']
-
 
 # -- Options for HTML output -------------------------------------------------
 html_theme = 'furo'
