@@ -28,6 +28,7 @@ plot_formats = ['svg']
 # -- Options for HTML output -------------------------------------------------
 html_theme = 'furo'
 html_static_path = ['_static']
+html_css_files = ['custom.css']
 html_theme_options = {
     "light_logo": "logo-light.svg",
     "dark_logo": "logo-dark.svg",
