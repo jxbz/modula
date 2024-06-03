@@ -40,7 +40,8 @@ def draw_xkcd_training_loss_plots():
         min_idx = np.argmin(training_loss)
         optima_list.append((shifted_learning_rates[min_idx], training_loss[min_idx]))
         
-        axes[0].plot(shifted_learning_rates, training_loss, label=f'{width}', color=color)
+        with plt.style.context({'path.effects': []}):
+            axes[0].plot(shifted_learning_rates, training_loss, label=f'{width}', color=color)
     
     axes[0].set_xlabel('learning rate')
     axes[0].set_ylabel('training loss')
@@ -74,7 +75,8 @@ def draw_xkcd_training_loss_plots():
         min_idx = np.argmin(training_loss)
         optima_list.append((learning_rates[min_idx], training_loss[min_idx]))
         
-        axes[1].plot(learning_rates, training_loss, label=f'{depth}', color=color)
+        with plt.style.context({'path.effects': []}):
+            axes[1].plot(learning_rates, training_loss, label=f'{depth}', color=color)
     
     axes[1].set_xlabel('learning rate')
     axes[1].set_ylabel('training loss')
