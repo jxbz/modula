@@ -15,7 +15,7 @@ jobs:
         docs-folder: docs/
         pre-build-command: >
           apt-get update -y
-          && apt-get install -y wget
+          && apt-get install -y wget unzip
           && wget -nc https://github.com/ipython/xkcd-font/blob/master/xkcd-script/font/xkcd-script.ttf?raw=true -O /usr/local/share/fonts/xkcd-Script.ttf
           && wget -nc https://github.com/ipython/xkcd-font/blob/master/xkcd/build/xkcd.otf?raw=true -O /usr/local/share/fonts/xkcd.otf
           && wget -O Comic_Neue.zip https://fonts.google.com/download?family=Comic%20Neue
