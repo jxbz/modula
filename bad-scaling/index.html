@@ -316,11 +316,11 @@
 <p><span class="caption-text">These cartoons illustrate typical bad scaling behaviours. On the left, the optimal learning rate drifts with increasing width. On the right, performance deteriorates with increasing depth.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
-<p>The good news is that we have now developed machinery that largely solves these scaling woes. It turns out that much of the problem can be solved by defining a special <code class="code highlight python docutils literal highlight-python"><span class="n">normalize</span></code> function which acts on gradients, leading to a new “normalized” gradient descent algorithm:</p>
+<p>The good news is that we have developed machinery that largely solves these scaling woes. It turns out that the problem is solved by defining a simple initialization scheme along with a special <code class="code highlight python docutils literal highlight-python"><span class="n">normalize</span></code> function which acts on gradients, leading to a new “normalized” gradient descent algorithm:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">weights</span> <span class="o">-=</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">normalize</span><span class="p">(</span><span class="n">gradient</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This gradient normalization <em>removes drift</em> in the optimal learning rate, and causes performance to <em>improve</em> with increasing scale. Modula automatically infers the normalize function from the architecture of the network. So the user can focus on writing their neural network architecture while Modula will handle properly normalizing the training.</p>
+<p>This initialization and gradient normalization <em>removes drift</em> in the optimal learning rate, and causes performance to <em>improve</em> with increasing scale. Modula automatically infers the necessary initialize and normalize functions from the architecture of the network. So the user can focus on writing their neural network architecture while Modula will handle properly normalizing the training.</p>
 <p>These docs are intended to explain how Modula works and also introduce the Modula API. In case you don’t care about Modula or automatic gradient normalization, the next section will explain how you can normalize training manually in a different framework like <a class="reference external" href="https://pytorch.org">PyTorch</a> or <a class="reference external" href="https://github.com/google/jax">JAX</a>.</p>
 </section>
 

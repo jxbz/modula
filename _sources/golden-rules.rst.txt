@@ -12,7 +12,7 @@ This turns out to be bad for scaling. Why? Because the network internals can beh
 The linear layer
 ^^^^^^^^^^^^^^^^^
 
-Consider a linear layer with initialization scale ``sigma``:
+Consider a linear layer with Gaussian initialization and standard deviation ``sigma``:
 
 .. code:: python
 
@@ -24,7 +24,11 @@ Consider a linear layer with initialization scale ``sigma``:
         def forward(self, x):
             return torch.matmul(self.weight, x)
 
-Suppose we are dealing with the final linear layer of a classifier, and we want to scale up ``fan_in`` while holding ``fan_out`` fixed. Then an important fact about :python:`self.weight` is that it has a huge null space [#null]_ of dimension ``fan_out - fan_in``. At initialization, most of a fixed input ``x`` will lie in this nullspace. This means that to get the output of :python:`self.forward` to have unit variance at initialization, you need to pick a huge initialization scale ``sigma`` in order to scale up the part of ``x`` that does not lie in the null space. But after a few steps of training, the situation changes. Gradient descent will cause the input ``x`` to align with the non-null space of ``self.weight``. This means that the ``sigma`` you chose to control the activations at initialization is now far too large in hindsight!
+The properties of this layer are most subtle when the layer conducts a large reduction in dimension---i.e. when ``fan_in`` is much larger than ``fan_out``. This might happen in the final layer of a classifier, for example. In fact, let's study the case where we are scaling up ``fan_in`` while holding ``fan_out`` fixed. 
+
+An important fact about a matrix :python:`self.weight` with ``fan_in`` much larger than ``fan_out`` is that the null space is huge, meaning that most of the input space is mapped to zero. The dimension of the null space is at least ``fan_out - fan_in``. At initialization, most of a fixed input ``x`` will lie in this nullspace. This means that to get the output of :python:`self.forward` to have unit variance at initialization, you need to pick a huge initialization scale ``sigma`` in order to scale up the part of ``x`` that does not lie in the null space. But after a few steps of training, the situation changes. Gradient descent will cause the input ``x`` to align with the non-null space of ``self.weight``. This means that the ``sigma`` you chose to control the activations at initialization is now far too large in hindsight, and the activations will blow up! This problem only gets worse with increasing ``fan_in``.
+
+The solution to this problem is simple: don't choose ``sigma`` to control variance at initialization! Instead, choose ``sigma`` under the assumption that inputs fall in the non-null space. Even if the activations are too small at initialization, this is fine as they will quickly "warm up" after a few steps of training. And finally we will show in `Fixing width scaling`_ that, if we switch from Gaussian intialization to orthogonal intialization, then choosing the right ``sigma`` becomes trivial.
 
 Three golden rules
 ^^^^^^^^^^^^^^^^^^^
@@ -41,7 +45,14 @@ The example in the previous section illustrates a style of thinking that extends
 
 It's worth expanding a little on what we mean by *alignment* here. When we say that an input ``x`` aligns with a weight matrix ``weight``, we mean that if we compute ``U, S, V = torch.linalg.svd(weight)``, then the input ``x`` will tend to have a larger dot product with the rows of ``V`` that correspond to larger diagonal entries of the singular value matrix ``S``.
 
+What's the source of this alignment? Well consider the following picture:
+
+.. plot:: figure/alignment.py
+
+A gradient update :math:`\Delta W` to a tensor :math:`W` "sees" both the head of the network (through the layer inputs) and the tail of the network (through the backpropagated gradient). Applying the update will align the head with the tail [#outerproduct]_. And this kind of alignment happens at all layers at every iteration!
+
 The remainder of this section will show how to apply the golden rules to do width scaling, depth scaling, and key-query dot product scaling. This should already be enough for you to get started scaling a GPT.
+
 
 Fixing width scaling
 ^^^^^^^^^^^^^^^^^^^^^
@@ -104,8 +115,7 @@ Fixing key-query dot product scaling
 
    This section is still under construction.
 
-
-.. [#null] The null space of a linear layer is the set of inputs that get mapped to zero.
+.. [#outerproduct] The mathematical analogue of this intuitive argument is to say that the gradient of a matrix is an outer product of the layer input with the gradient of the loss with respect to the layer output.
 
 .. [#spectralnorm] The spectral norm of a matrix is the largest singular value. The largest singular value of :python:`matrix / spectral_norm(matrix)` is always one, so long as :python:`matrix != 0`.
 
