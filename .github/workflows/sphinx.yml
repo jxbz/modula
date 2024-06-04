@@ -14,14 +14,12 @@ jobs:
       with:
         docs-folder: docs/
         pre-build-command: >
-          apt-get update -y
-          && apt-get install -y wget unzip
-          && wget -nc https://github.com/ipython/xkcd-font/blob/master/xkcd-script/font/xkcd-script.ttf?raw=true -O /usr/local/share/fonts/xkcd-Script.ttf
-          && wget -nc https://github.com/ipython/xkcd-font/blob/master/xkcd/build/xkcd.otf?raw=true -O /usr/local/share/fonts/xkcd.otf
-          && wget -O Comic_Neue.zip https://fonts.google.com/download?family=Comic%20Neue
-          && unzip -d comic_neue/ Comic_Neue.zip
-          && comic_neue /usr/share/fonts/
-          && fc-cache -f -v
+          apt-get update -y;
+          apt-get install -y wget unzip;
+          wget -nc https://github.com/ipython/xkcd-font/blob/master/xkcd-script/font/xkcd-script.ttf?raw=true -O /usr/local/share/fonts/xkcd-Script.ttf;
+          wget -nc https://github.com/ipython/xkcd-font/blob/master/xkcd/build/xkcd.otf?raw=true -O /usr/local/share/fonts/xkcd.otf;
+          wget -nc https://github.com/antimatter15/doge/blob/master/Comic%20Sans%20MS.ttf?raw=true -O /usr/local/share/fonts/comic-sans.otf;
+          fc-cache -f -v;
         build-command: "sphinx-build -b dirhtml source build"
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
