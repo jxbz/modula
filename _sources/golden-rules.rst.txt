@@ -24,11 +24,11 @@ Consider a linear layer with Gaussian initialization and standard deviation ``si
         def forward(self, x):
             return torch.matmul(self.weight, x)
 
-The properties of this layer are most subtle when the layer conducts a large reduction in dimension---i.e. when ``fan_in`` is much larger than ``fan_out``. This might happen in the final layer of a classifier, for example. In fact, let's study the case where we are scaling up ``fan_in`` while holding ``fan_out`` fixed. 
+The properties of this layer are most subtle when the layer conducts a large reduction in dimension---i.e. when ``fan_out`` is much smaller than ``fan_in``. This might happen in the final layer of a classifier, for example. In fact, let's study the case where we are scaling up ``fan_in`` while holding ``fan_out`` fixed. 
 
-An important fact about a matrix :python:`self.weight` with ``fan_in`` much larger than ``fan_out`` is that the null space is huge, meaning that most of the input space is mapped to zero. The dimension of the null space is at least ``fan_out - fan_in``. At initialization, most of a fixed input ``x`` will lie in this nullspace. This means that to get the output of :python:`self.forward` to have unit variance at initialization, you need to pick a huge initialization scale ``sigma`` in order to scale up the part of ``x`` that does not lie in the null space. But after a few steps of training, the situation changes. Gradient descent will cause the input ``x`` to align with the non-null space of ``self.weight``. This means that the ``sigma`` you chose to control the activations at initialization is now far too large in hindsight, and the activations will blow up! This problem only gets worse with increasing ``fan_in``.
+An important fact about a matrix :python:`self.weight` with ``fan_in`` much larger than ``fan_out`` is that the null space is huge, meaning that most of the input space is mapped to zero. The dimension of the null space is at least ``fan_in - fan_out``. At initialization, most of a fixed input ``x`` will lie in this nullspace. This means that to get the output of :python:`self.forward` to have unit variance at initialization, you need to pick a huge initialization scale ``sigma`` in order to scale up the component of ``x`` that does not lie in the null space. But after a few steps of training, the situation changes. Gradient descent will cause the input ``x`` to align with the non-null space of ``self.weight``. This means that the ``sigma`` you chose to control the activations at initialization is now far too large in hindsight, and the activations will blow up! This problem only gets worse with increasing ``fan_in``.
 
-The solution to this problem is simple: don't choose ``sigma`` to control variance at initialization! Instead, choose ``sigma`` under the assumption that inputs fall in the non-null space. Even if the activations are too small at initialization, this is fine as they will quickly "warm up" after a few steps of training. And finally we will show in `Fixing width scaling`_ that, if we switch from Gaussian intialization to orthogonal intialization, then choosing the right ``sigma`` becomes trivial.
+The solution to this problem is simple: don't choose ``sigma`` to control variance at initialization! Instead, choose ``sigma`` under the assumption that inputs fall in the non-null space. Even if this makes the activations too small at initialization, this is fine as they will quickly "warm up" after a few steps of training. And for a nice bonus, we will show in the section on `width scaling <#fixing-width-scaling>`_ that switching from Gaussian init to orthogonal init makes choosing the right ``sigma`` trivial.
 
 Three golden rules
 ^^^^^^^^^^^^^^^^^^^
@@ -43,21 +43,20 @@ The example in the previous section illustrates a style of thinking that extends
 
         - All layers will align during training. Keep this in mind when designing the architecture.
 
-It's worth expanding a little on what we mean by *alignment* here. When we say that an input ``x`` aligns with a weight matrix ``weight``, we mean that if we compute ``U, S, V = torch.linalg.svd(weight)``, then the input ``x`` will tend to have a larger dot product with the rows of ``V`` that correspond to larger diagonal entries of the singular value matrix ``S``.
+It's worth expanding a little on what we mean by *alignment* here. When we say that an input ``x`` aligns with a weight matrix ``weight``, we mean that if we compute ``U, S, V = torch.linalg.svd(weight)``, then the input ``x`` will tend to have a larger dot product with the rows of ``V`` that correspond to larger diagonal entries of the singular value matrix ``S``. When we say that layers align, we mean that the outputs of one layer will align with the next layer.
 
-What's the source of this alignment? Well consider the following picture:
+What's the source of this alignment? Consider making a gradient update to a tensor in the middle of a deep net. We call all the preceding layers the "head" of the network, and all the layers after the "tail":
 
 .. plot:: figure/alignment.py
 
-A gradient update :math:`\Delta W` to a tensor :math:`W` "sees" both the head of the network (through the layer inputs) and the tail of the network (through the backpropagated gradient). Applying the update will align the head with the tail [#outerproduct]_. And this kind of alignment happens at all layers at every iteration!
+What's important is that the gradient update "knows about" both the head of the network (through the layer inputs) and the tail of the network (through the backpropagated gradient). Applying the update will align the head with the tail [#outerproduct]_. And this kind of alignment happens at all layers at every iteration!
 
-The remainder of this section will show how to apply the golden rules to do width scaling, depth scaling, and key-query dot product scaling. This should already be enough for you to get started scaling a GPT.
-
+The rest of this section will show how to apply the golden rules to do `width scaling <#fixing-width-scaling>`_, `depth scaling <#fixing-depth-scaling>`_, and `key-query dot product scaling <#fixing-key-query-dot-product-scaling>`_. This should already be enough to get started scaling a GPT.
 
 Fixing width scaling
 ^^^^^^^^^^^^^^^^^^^^^
 
-First, let's do width scaling in a linear layer. When the network has trained for a few steps to reach its fully aligned state, we want the input and output activations to fall roughly in the interval [-1, 1]. Applying the first golden rule, this tells us that the top singular values of the linear layer need to be around :python:`math.sqrt(fan_out / fan_in)` in magnitude. Intuitively, this is a "conversion factor" that turns a ``fan_in``-dimensional vector with order one entries to a ``fan_out``-dimensional vector with order one entries.
+First, let's do width scaling in a linear layer. When the network has trained for a few steps to reach its fully aligned state, we want the input and output activations to fall roughly in the interval [-1, 1]. Applying the first and second golden rules, this tells us that we need to control the top singular values of the initial weight matrix and the gradient updates. One can check that the right scaling is to set the singular values proportional to :python:`math.sqrt(fan_out / fan_in)`. Intuitively, the factor of :python:`math.sqrt(fan_out / fan_in)` means that the matrix operates as a "dimensional converter": it takes in vectors of length :python:`math.sqrt(fan_in)` and spits out vectors of length :python:`math.sqrt(fan_out)` [#euclid]_.
 
 In fact we can be a little more clever here and reparameterize the linear layer as follows:
 
@@ -73,9 +72,7 @@ In fact we can be a little more clever here and reparameterize the linear layer 
         def forward(self, x):
             return self.scale * torch.matmul(self.weight, x)
 
-By including the dimensional conversion factor :python:`self.scale = math.sqrt(fan_out / fan_in)` in the forward function, we can now initialize :python:`self.weight` to have order one singular values. Orthogonal init is a simple and interpretable way to do this---it makes all the singular values exactly one! In our experiments, we have found this parameterization and initialization to be performant without needing any hyperparameters. We use this style of reparameterized forward function in all Modula atomics.
-
-As for training, we want gradient updates to be as large as possible without blowing up the outputs. By the second golden rule, this implies that we want the gradient updates to have singular values that are again order one. A simple way to achieve this is to just directly spectrally normalize [#spectralnorm]_ the updates:
+By including the conversion factor :python:`self.scale = math.sqrt(fan_out / fan_in)` in the forward function, the correct scaling is to make the largest singular values of both :python:`self.weight` and the weight updates order one. Easy, right? For the initialization, we can just use orthogonal init, which sets all the singular values to exactly one. In our experiments, we have found orthogonal init to be a performant, hyperparameter-free initializer. As for weight updates, we can just spectrally normalize them [#spectralnorm]_:
 
 .. code:: python
 
@@ -115,7 +112,9 @@ Fixing key-query dot product scaling
 
    This section is still under construction.
 
-.. [#outerproduct] The mathematical analogue of this intuitive argument is to say that the gradient of a matrix is an outer product of the layer input with the gradient of the loss with respect to the layer output.
+.. [#outerproduct] The mathematical analogue of this intuitive statement is to say that the gradient of a linear layer is an outer product of the layer input with the gradient of the loss with respect to the layer output.
+
+.. [#euclid] By "length" we mean the Euclidean length in this instance.
 
 .. [#spectralnorm] The spectral norm of a matrix is the largest singular value. The largest singular value of :python:`matrix / spectral_norm(matrix)` is always one, so long as :python:`matrix != 0`.
 
