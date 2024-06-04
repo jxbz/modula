@@ -30,7 +30,7 @@ for i, layer in enumerate(layers):
 # Highlight the middle layer with an update in a separate block above, closer
 
 with plt.style.context({'path.effects': []}):
-    ax.text(mid_layer-0.1, 1.5, '∆W', ha='center', va='center', fontsize=16, 
+    ax.text(mid_layer-0.1, 1.5, 'ΔW', ha='center', va='center', fontsize=16,
         bbox=dict(facecolor='#FDFD96', edgecolor='black', pad=10.0))
 ax.arrow(mid_layer-0.1, 1.5, 0, -0.70, head_width=0.1, head_length=0.1, fc='black', ec='black')
 
