@@ -31,6 +31,14 @@ python examples/train-gpt.py
 
 This runs on CPU and should get train loss: 1.65 and test loss: 1.80 after 2000 iterations.
 
+## Project roadmap
+
+These are the current plans for the project. Ideas and pull requests are welcome!
+
+- [ ] finish writing [the docs](https://jeremybernste.in/modula/)
+- [ ] improve MFU (see https://github.com/jxbz/modula/pull/1)
+- [ ] add more examples
+
 ## Learning rate transfer with Modula
 
 The following figures are all for 10k steps of training GPT on OpenWebText.
