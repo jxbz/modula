@@ -21,7 +21,7 @@ Navigating the docs
 
 If you don't care about Modula and just want to learn how to directly scale training in `PyTorch <https://pytorch.org>`_ or `JAX <https://github.com/google/jax>`_, then skip directly to the section on `golden rules for scaling <golden-rules>`_. 
 
-Otherwise, use the :kbd:`←` and :kbd:`→` arrow keys to jump around the docs.
+Otherwise, use the side panel or the :kbd:`←` and :kbd:`→` arrow keys to jump around the docs.
 
 Companion paper
 ^^^^^^^^^^^^^^^^

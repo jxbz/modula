@@ -21,12 +21,12 @@ Under these scaling operations, gradient descent training can break in two main 
 
    These cartoons illustrate typical bad scaling behaviours. On the left, the optimal learning rate drifts with increasing width. On the right, performance deteriorates with increasing depth.
 
-The good news is that we have now developed machinery that largely solves these scaling woes. It turns out that much of the problem can be solved by defining a special :python:`normalize` function which acts on gradients, leading to a new "normalized" gradient descent algorithm:
+The good news is that we have developed machinery that largely solves these scaling woes. It turns out that the problem is solved by defining a simple initialization scheme along with a special :python:`normalize` function which acts on gradients, leading to a new "normalized" gradient descent algorithm:
 
 .. code:: python
 
    weights -= learning_rate * normalize(gradient)
 
-This gradient normalization *removes drift* in the optimal learning rate, and causes performance to *improve* with increasing scale. Modula automatically infers the normalize function from the architecture of the network. So the user can focus on writing their neural network architecture while Modula will handle properly normalizing the training. 
+This initialization and gradient normalization *removes drift* in the optimal learning rate, and causes performance to *improve* with increasing scale. Modula automatically infers the necessary initialize and normalize functions from the architecture of the network. So the user can focus on writing their neural network architecture while Modula will handle properly normalizing the training. 
 
 These docs are intended to explain how Modula works and also introduce the Modula API. In case you don't care about Modula or automatic gradient normalization, the next section will explain how you can normalize training manually in a different framework like `PyTorch <https://pytorch.org>`_ or `JAX <https://github.com/google/jax>`_.
