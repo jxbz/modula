@@ -21,7 +21,7 @@ Under these scaling operations, gradient descent training can break in two main 
 
    These cartoons illustrate typical bad scaling behaviours. On the left, the optimal learning rate drifts with increasing width. On the right, performance deteriorates with increasing depth.
 
-The good news is that we have developed machinery that largely solves these scaling woes. It turns out that the problem is solved by defining a simple initialization scheme along with a special :python:`normalize` function which acts on gradients, leading to a new "normalized" gradient descent algorithm:
+The good news is that we have developed machinery that largely solves these scaling woes. It turns out that the problem is solved by defining a simple weight initializer along with a special :python:`normalize` function which acts on gradients, leading to a new "normalized" gradient descent algorithm:
 
 .. code:: python
 

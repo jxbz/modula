@@ -316,7 +316,7 @@
 <p><span class="caption-text">These cartoons illustrate typical bad scaling behaviours. On the left, the optimal learning rate drifts with increasing width. On the right, performance deteriorates with increasing depth.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
-<p>The good news is that we have developed machinery that largely solves these scaling woes. It turns out that the problem is solved by defining a simple initialization scheme along with a special <code class="code highlight python docutils literal highlight-python"><span class="n">normalize</span></code> function which acts on gradients, leading to a new “normalized” gradient descent algorithm:</p>
+<p>The good news is that we have developed machinery that largely solves these scaling woes. It turns out that the problem is solved by defining a simple weight initializer along with a special <code class="code highlight python docutils literal highlight-python"><span class="n">normalize</span></code> function which acts on gradients, leading to a new “normalized” gradient descent algorithm:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">weights</span> <span class="o">-=</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">normalize</span><span class="p">(</span><span class="n">gradient</span><span class="p">)</span>
 </pre></div>
 </div>
