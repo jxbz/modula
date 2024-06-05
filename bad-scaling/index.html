@@ -320,7 +320,7 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">weights</span> <span class="o">-=</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">normalize</span><span class="p">(</span><span class="n">gradient</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This initialization and gradient normalization <em>removes drift</em> in the optimal learning rate, and causes performance to <em>improve</em> with increasing scale. Modula automatically infers the necessary initialize and normalize functions from the architecture of the network. So the user can focus on writing their neural network architecture while Modula will handle properly normalizing the training.</p>
+<p>This initialization and gradient normalization removes drift in the optimal learning rate, and causes performance to improve with increasing scale. Modula automatically infers the necessary initialize and normalize functions from the architecture of the network. So the user can focus on writing their neural network architecture while Modula will handle properly normalizing the training.</p>
 <p>These docs are intended to explain how Modula works and also introduce the Modula API. In case you don’t care about Modula or automatic gradient normalization, the next section will explain how you can normalize training manually in a different framework like <a class="reference external" href="https://pytorch.org">PyTorch</a> or <a class="reference external" href="https://github.com/google/jax">JAX</a>.</p>
 </section>
 

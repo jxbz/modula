@@ -13,6 +13,9 @@ The science of scale
 
 some twists and turns
 
+Pre-history
+^^^^^^^^^^^^
+
    | 📘 `On the distance between two neural networks and the stability of learning <https://arxiv.org/abs/2002.03432>`_
    |     Jeremy Bernstein, Arash Vahdat, Yisong Yue, Ming-Yu Liu
    |     NeurIPS 2020
@@ -23,13 +26,15 @@ some more text
    |     Greg Yang, Edward J. Hu
    |     ICML 2021
 
-and more text
+Truth and reconciliation
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
    | 📗 `A spectral condition for feature learning <https://arxiv.org/abs/2310.17813>`_
    |     Greg Yang, James B. Simon, Jeremy Bernstein
    |     arXiv 2023
 
-and more
+Automation of training
+^^^^^^^^^^^^^^^^^^^^^^^
 
    | 📒 `Automatic gradient descent: Deep learning without hyperparameters <https://arxiv.org/abs/2304.05187>`_
    |     Jeremy Bernstein, Chris Mingard, Kevin Huang, Navid Azizan, Yisong Yue
