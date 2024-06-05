@@ -27,6 +27,6 @@ The good news is that we have developed machinery that largely solves these scal
 
    weights -= learning_rate * normalize(gradient)
 
-This initialization and gradient normalization *removes drift* in the optimal learning rate, and causes performance to *improve* with increasing scale. Modula automatically infers the necessary initialize and normalize functions from the architecture of the network. So the user can focus on writing their neural network architecture while Modula will handle properly normalizing the training. 
+This initialization and gradient normalization removes drift in the optimal learning rate, and causes performance to improve with increasing scale. Modula automatically infers the necessary initialize and normalize functions from the architecture of the network. So the user can focus on writing their neural network architecture while Modula will handle properly normalizing the training. 
 
 These docs are intended to explain how Modula works and also introduce the Modula API. In case you don't care about Modula or automatic gradient normalization, the next section will explain how you can normalize training manually in a different framework like `PyTorch <https://pytorch.org>`_ or `JAX <https://github.com/google/jax>`_.
