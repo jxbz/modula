@@ -87,30 +87,47 @@ For depth scaling, we will look at scaling the number of blocks in a residual ne
 
 .. code:: python
 
-    def resnet(x:torch.Tensor, layer_list:list, block_multiplier:float):
+    def resnet(x:torch.Tensor, residue_list:list, block_multiplier:float):
 
-        for layer in layer_list:
+        for residue in residue_list:
 
-            x += block_multiplier * layer(x)
+            x += block_multiplier * residue(x)
 
         return x
 
-We call this a residual network because at each iteration of the :python:`for` loop, a small "residue" is added to the input, which takes the form of a neural network ``layer`` applied to the output from the previous step of the loop. The ``block_multiplier`` can be used to ensure that the residue is small, allowing us to make the residual network very, very deep without its output blowing up. The main questions are:
+We call this a residual network because at each iteration of the :python:`for` loop, a :python:`residue` is added to the input, which takes the form of a sub-network applied to the output from the previous step of the loop. The ``block_multiplier`` can be used to ensure that the residual contribution is small, allowing us to make the residual network very, very deep without its output blowing up. The main questions are:
 
-- What kind of layers are we allowed to include in the ``layer_list``?
+- What kind of functions are we allowed to include in the ``residue_list``?
 - What value should we choose for the ``block_multiplier``?
 
-The third golden rule makes answering these questions easy. If we design each ``layer`` in ``layer_list`` in accordance with the golden rules [#modula]_, then we should set :python:`block_multiplier = 1 / len(layer_list)`. This is because each layer will add one contribution to the output, and there are :python:`len(layer_list)` layers in total. Since we are assuming that all layers align by the third golden rule, we should divide each contribution by :python:`len(layer_list)` in order to ensure that the output does not blow up.
+The third golden rule makes answering these questions easy. We should set :python:`block_multiplier = 1 / len(residue_list)`. This is because each residue adds one contribution to the output, and there are :python:`len(residue_list)` residues in total. The sum of :python:`len(residue_list)` aligned residues needs to be divided by :python:`len(residue_list)` in order to not blow up. This is similar to an idea you may have seen in math that :math:`(1+\frac{1}{L})^L < \mathrm{e}` for any :math:`L>0`. Even though the product may involve a large number :math:`L` of terms, the residue :math:`1/L` is small enough to prevent the product blowing up. Linking the analogy back to neural nets, :math:`L` plays the role of :python:`len(residue_list)`.
 
-This is similar to an idea you may have seen in math that :math:`(1+\frac{1}{L})^L < \mathrm{e}` for any :math:`L>0`. Even though the product may involve a large number :math:`L` of terms, the residue :math:`1/L` is small enough to prevent the product blowing up. Linking the analogy back to neural nets, :math:`L` plays the role of :python:`len(layer_list)`.
+Since the :python:`1/len(residue_list)` block multiplier prevents both the initialization and the updates to the residues from blowing up, we are safe to set each residue equal to any neural network of our choosing, so long as that network is individually initialized and updated in accordance with the golden rules [#recursive]_.
 
 Fixing key-query dot product scaling
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. admonition:: Warning
-   :class: warning
+An important operation in transformers is taking the dot product between key and query vectors. Conventionally this is done as follows:
 
-   This section is still under construction.
+.. code:: python
+
+    lambda key, query : torch.dot(key, query) / math.sqrt(key.shape[0])
+
+The factor of :python:`1 / math.sqrt(key.shape[0])` is included to prevent the dot product from blowing up at initialization, where we assume that ``key`` and ``query`` are uncorrelated random vectors. But by the golden rules, we should expect that they keys and queries become aligned with each other through the course of training. Therefore we should instead normalize the dot product as follows:
+
+.. code:: python
+
+    lambda key, query : torch.dot(key, query) / key.shape[0]
+
+To spell this out more clearly, the dot product is the sum of a number :python:`key.shape[0]` of aligned quantities, so we should divide by :python:`key.shape[0]` to prevent the sum blowing up.
+
+Wrapping up
+^^^^^^^^^^^^
+
+On this page, we introduced three "golden rules" for scaling and pointed out how they differ to some conventional wisdom about controlling activation variance at initialization. One of the points we hope to get across is that the logical reasoning associated with the golden rules is not only *more scalable* but also *simpler* than standard approaches based on controlling variance. You don't need to know anything about how random variables behave in order to get scaling right---you just need to know how objects add when they point in the same direction. Furthermore, the use of orthogonal initialization obviates the need to know anything about the spectral properties of Gaussian random matrices.
+
+In the next section we will look at the history behind these ideas, and after that we will explain how Modula automates the application of the golden rules.
+
 
 .. [#outerproduct] The mathematical analogue of this intuitive statement is to say that the gradient of a linear layer is an outer product of the layer input with the gradient of the loss with respect to the layer output.
 
@@ -118,4 +135,4 @@ Fixing key-query dot product scaling
 
 .. [#mlp] We study residual networks over MLPs because MLPs seem to just work bad beyond depth 10 or so. In the Modula paper, we show that the type of residual networks we propose are in fact "smooth" even in the limit of infinitely many blocks. The same property does not hold for MLPs to the best of our knowledge.
 
-.. [#modula] The fact that this smells like a recursive statement was part of the inspiration for Modula.
+.. [#recursive] The recursive nature of this statement directly inspired the Modula framework.
