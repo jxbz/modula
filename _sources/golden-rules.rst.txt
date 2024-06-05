@@ -113,7 +113,7 @@ An important operation in transformers is taking the dot product between key and
 
     lambda key, query : torch.dot(key, query) / math.sqrt(key.shape[0])
 
-The factor of :python:`1 / math.sqrt(key.shape[0])` is included to prevent the dot product from blowing up at initialization, where we assume that ``key`` and ``query`` are uncorrelated random vectors. But by the golden rules, we should expect that they keys and queries become aligned with each other through the course of training. Therefore we should instead normalize the dot product as follows:
+The factor of :python:`1 / math.sqrt(key.shape[0])` is included to prevent the dot product from blowing up at initialization, where we assume that ``key`` and ``query`` are uncorrelated random vectors. But by the golden rules, we should expect that the keys and queries become aligned with each other through the course of training. Therefore we should instead normalize the dot product as follows:
 
 .. code:: python
 
