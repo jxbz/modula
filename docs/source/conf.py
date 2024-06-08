@@ -11,14 +11,17 @@ extensions = [
 	"sphinx_inline_tabs",
     "sphinx.ext.autodoc",
     "matplotlib.sphinxext.plot_directive",
-	"sphinxext.opengraph"
+	"sphinxext.opengraph",
+    "sphinx_design"
 ]
 templates_path = ['_templates']
 exclude_patterns = []
-rst_prolog = """.. role:: python(code)
-                    :language: python
-                    :class: highlight
-             """
+rst_prolog = """
+.. |nbsp|  unicode:: U+00A0 .. NO-BREAK SPACE
+.. role:: python(code)
+    :language: python
+    :class: highlight
+"""
 
 # -- Opengraph ---------------------------------------------------------------
 ogp_site_url = "https://jeremybernste.in/modula/"
