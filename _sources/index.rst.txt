@@ -10,23 +10,19 @@ Modula is a deep learning framework designed for graceful scaling. Neural networ
 Purpose of the docs
 ^^^^^^^^^^^^^^^^^^^^
 
-The purpose of these docs is three-fold: 
+We wrote these docs with the intention of explaining both scaling theory and the design of Modula in clear and simple terms. We hope that this will turbo charge deep learning optimization research.
 
-1. teach scaling through code;
-2. introduce the Modula API;
-3. explain how to extend Modula.
+If something is unclear, first check `the FAQ <faq>`_, but then consider starting a `GitHub issue <https://github.com/jxbz/modula/issues>`_, making a `pull request <https://github.com/jxbz/modula/pulls>`_ or reaching out to us by email. Then we can improve the docs for everyone.
 
 Navigating the docs
 ^^^^^^^^^^^^^^^^^^^^
 
-If you don't care about Modula and just want to learn how to directly scale training in `PyTorch <https://pytorch.org>`_ or `JAX <https://github.com/google/jax>`_, then skip directly to the section on `golden rules for scaling <golden-rules>`_. 
-
-Otherwise, use the side panel or the :kbd:`←` and :kbd:`→` arrow keys to jump around the docs.
+You can use the :kbd:`←` and :kbd:`→` arrow keys to jump around the docs. You can also use the side panel.
 
 Companion paper
 ^^^^^^^^^^^^^^^^
 
-If you like math better than code, then you might prefer to read `our paper <https://arxiv.org/abs/2405.14813>`_:
+If you prefer to read a more academic-style paper, then you can check out `our arXiv paper <https://arxiv.org/abs/2405.14813>`_:
 
 .. code::
     
