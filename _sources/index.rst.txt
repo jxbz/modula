@@ -37,6 +37,11 @@ If you like math better than code, then you might prefer to read `our paper <htt
       year    = 2024
     }
 
+Acknowledgements
+^^^^^^^^^^^^^^^^^
+
+Thanks to Gavia Gray, Uzay Girit and Jyo Pari for helpful feedback.
+
 .. toctree::
    :hidden:
    :maxdepth: 2
@@ -49,7 +54,7 @@ If you like math better than code, then you might prefer to read `our paper <htt
 .. toctree::
    :hidden:
    :maxdepth: 2
-   :caption: Theory of modules:
+   :caption: Theory of Modules:
 
    theory/vector
    theory/module
@@ -60,7 +65,8 @@ If you like math better than code, then you might prefer to read `our paper <htt
 .. toctree::
    :hidden:
    :maxdepth: 2
-   :caption: Useful links:
+   :caption: More on Modula:
 
+   Modula FAQ <faq>
    Modula codebase <https://github.com/jxbz/modula>
    Modula paper <https://arxiv.org/abs/2405.14813>
