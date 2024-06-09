@@ -10,7 +10,7 @@ Modula is a deep learning framework designed for graceful scaling. Neural networ
 Purpose of the docs
 ^^^^^^^^^^^^^^^^^^^^
 
-We wrote these docs with the intention of explaining both scaling theory and the design of Modula in clear and simple terms. We hope that this will turbo charge deep learning optimization research.
+We wrote these docs with the intention of explaining both scaling theory and the design of Modula in clear and simple terms. We hope that this could help speed up deep learning optimization research.
 
 If something is unclear, first check `the FAQ <faq>`_, but then consider starting a `GitHub issue <https://github.com/jxbz/modula/issues>`_, making a `pull request <https://github.com/jxbz/modula/pulls>`_ or reaching out to us by email. Then we can improve the docs for everyone.
 
