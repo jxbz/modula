@@ -12,7 +12,8 @@ extensions = [
     "sphinx.ext.autodoc",
     "matplotlib.sphinxext.plot_directive",
 	"sphinxext.opengraph",
-    "sphinx_design"
+    "sphinx_design",
+    "sphinxcontrib.youtube"
 ]
 templates_path = ['_templates']
 exclude_patterns = []

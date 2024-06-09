@@ -4,3 +4,4 @@ sphinx_inline_tabs
 sphinxext.opengraph
 matplotlib
 sphinx-design
+sphinxcontrib-youtube
