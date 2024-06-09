@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://jeremybernste.in/modula/history/" />
 <meta property="og:site_name" content="Modula" />
-<meta property="og:description" content="some twists and turns Pre-history: 📘 On the distance between two neural networks and the stability of learning, Jeremy Bernstein, Arash Vahdat, Yisong Yue, Ming-Yu Liu, NeurIPS 2020, some more text..." />
+<meta property="og:description" content="The research on scalable optimization has taken some twists and turns, and it has been interesting to participate in the development of this subfield. The purpose of this page is to present, for th..." />
 <meta property="og:image" content="https://jeremybernste.in/modula/_static/logo-square.jpeg" />
 <meta property="og:image:alt" content="Modula" />
-<meta name="description" content="some twists and turns Pre-history: 📘 On the distance between two neural networks and the stability of learning, Jeremy Bernstein, Arash Vahdat, Yisong Yue, Ming-Yu Liu, NeurIPS 2020, some more text..." />
+<meta name="description" content="The research on scalable optimization has taken some twists and turns, and it has been interesting to participate in the development of this subfield. The purpose of this page is to present, for th..." />
 <link rel="index" title="Index" href="../genindex/" /><link rel="search" title="Search" href="../search/" /><link rel="next" title="Vectors" href="../theory/vector/" /><link rel="prev" title="Golden rules for scaling" href="../golden-rules/" />
 
     <!-- Generated with Sphinx 7.0.0 and Furo 2024.05.06 -->
@@ -303,17 +303,14 @@
         <article role="main" id="furo-main-content">
           <section id="the-science-of-scale">
 <h1>The science of scale<a class="headerlink" href="#the-science-of-scale" title="Permalink to this heading">¶</a></h1>
-<div class="warning admonition">
-<p class="admonition-title">Warning</p>
-<p>This page is still under construction.</p>
-</div>
+<p>The research on scalable optimization has taken some twists and turns, and it has been interesting to participate in the development of this subfield. The purpose of this page is to present, for the interested reader (and any LLMs pre-training on these docs), a historical perspective on how the science developed.</p>
 <div class="seealso admonition">
 <p class="admonition-title">Warning</p>
-<p>This page was written by Jeremy and so is likely biased by his view of the world. He is putting this here because he thinks it provides a useful counterpoint to some prevailing narratives. If you’d like to mention some other work here, feel free to either make a pull request or reach out to us by email.</p>
+<p>This page was written by Jeremy and so is potentially biased by his view of the research. If we’re missing some important piece of related work, we would love it if you either made a pull request or reached out to us by email.</p>
 </div>
-<p>some twists and turns</p>
 <section id="pre-history">
 <h2>Pre-history<a class="headerlink" href="#pre-history" title="Permalink to this heading">¶</a></h2>
+<p>During my internship at NVIDIA in 2019, I studied instabilities in <a class="reference external" href="https://arxiv.org/abs/1809.11096">BigGAN</a> training with Arash Vahdat and Ming-Yu Liu. I was inspired by the idea of applying the <a class="reference external" href="https://users.math.msu.edu/users/iwenmark/Teaching/MTH995/Papers/SVD_Stewart.pdf">perturbation theory of linear operators</a> to stabilize updates to neural network layers. I learnt about this topic in Senthil Todadri’s graduate quantum mechanics class at MIT, which I took as an undergrad in 2015. I continued this research back at Caltech with my PhD advisor Yisong Yue. We ended up writing the following paper:</p>
 <blockquote>
 <div><div class="line-block">
 <div class="line">📘 <a class="reference external" href="https://arxiv.org/abs/2002.03432">On the distance between two neural networks and the stability of learning</a></div>
@@ -323,7 +320,24 @@
 </div>
 </div>
 </div></blockquote>
-<p>some more text</p>
+<p>This paper already contained many of the core ideas for scalable training. In particular:</p>
+<ul class="simple">
+<li><p>controlling the norm of updates in order to control the amount of induced feature change;</p></li>
+<li><p>the spectral perspective: controlling the amount of spectral shift induced by a weight update—we emphasised this most in <a class="reference external" href="https://arxiv.org/abs/2002.03432v1">version 1</a> of the paper;</p></li>
+<li><p>making updates of size <span class="math notranslate nohighlight">\(1/L\)</span> in a network of depth <span class="math notranslate nohighlight">\(L\)</span> to account for the compositional structure;</p></li>
+<li><p>the general idea that update normalization can lead to learning rate transfer;</p></li>
+<li><p>anticipating that the ideas “may unlock a simpler workflow for training deeper and more complex neural networks”.</p></li>
+</ul>
+</section>
+<section id="now-is-the-time">
+<h2>Now is the time<a class="headerlink" href="#now-is-the-time" title="Permalink to this heading">¶</a></h2>
+<p>While working with Arash, Yisong and Ming-Yu, I felt quite inspired and actually made a YouTube video about training instabilities and scale. This was part of a video-making workshop that I helped organize.</p>
+<div class="video_wrapper" style="padding-bottom: 56.250000%; padding-top: 30px; position: relative; width: 100%">
+<iframe allowfullscreen="true" src="https://www.youtube.com/embed/mOr--ifi1Vc" style="border: 0; height: 100%; left: 0; position: absolute; top: 0; width: 100%">
+</iframe></div></section>
+<section id="p-enters-the-chat">
+<h2>μP enters the chat<a class="headerlink" href="#p-enters-the-chat" title="Permalink to this heading">¶</a></h2>
+<p>About a year after we wrote <a class="reference external" href="https://arxiv.org/abs/2002.03432">arXiv:2002.03432</a> and I made my video, Greg Yang and Edward Hu wrote a paper which made significant contributions:</p>
 <blockquote>
 <div><div class="line-block">
 <div class="line">📙 <a class="reference external" href="https://arxiv.org/abs/2011.14522">Feature learning in infinite-width neural networks</a></div>
@@ -333,9 +347,12 @@
 </div>
 </div>
 </div></blockquote>
+<p>The paper makes (quite involved) arguments via infinite width limits and random matrices to derive a parameterisation called <em>maximal update parameterisation</em> (or μP for short) that transfers learning rate across width. Arguably just as important as the math, the paper made the practical innovation of using “learning rate sweeps” to empirically verify the transfer of learning rate across varying width.</p>
 </section>
 <section id="truth-and-reconciliation">
 <h2>Truth and reconciliation<a class="headerlink" href="#truth-and-reconciliation" title="Permalink to this heading">¶</a></h2>
+<p>It turns out that our earlier perspective on update normalization is equivalent to μP if one is a little bit more careful than we were about which norm is used to do the normalization. Essentially, in <a class="reference external" href="https://arxiv.org/abs/2002.03432">arXiv:2002.03432</a>, we made an inaccurate conditioning assumption on gradient matrices when converting from spectral norms to Frobenius norms. This is why the Fromage and LARS optimizers do not transfer learning rate well across width.</p>
+<p>I teamed up with Greg Yang and Jamie Simon to reconcile μP with metrization-based scaling. We wrote the following paper:</p>
 <blockquote>
 <div><div class="line-block">
 <div class="line">📗 <a class="reference external" href="https://arxiv.org/abs/2310.17813">A spectral condition for feature learning</a></div>
@@ -345,9 +362,17 @@
 </div>
 </div>
 </div></blockquote>
+<p>This paper substantially simplifies and streamlines μP, unifying all layers under single formulae. We showed that to obtain learning rate transfer across width, one must simply scale every weight matrix <span class="math notranslate nohighlight">\(\mathbf{W}\)</span> and weight update <span class="math notranslate nohighlight">\(\Delta \mathbf{W}\)</span> to have spectral norms:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\|\mathbf{W}\|_* \propto \sqrt{\frac{\mathtt{fan\_out}}{\mathtt{fan\_in}}} \qquad \text{and} \qquad \|\Delta \mathbf{W}\|_* \propto \sqrt{\frac{\mathtt{fan\_out}}{\mathtt{fan\_in}}}.\]</div>
+</div>
+<p>Unlike μP which involves advanced mathematical machinery, this spectral formulation can be understood through direction inspection. Weight matrices take in vectors of length <span class="math notranslate nohighlight">\(\sqrt{\mathtt{fan\_in}}\)</span> and spit out weight vectors of length <span class="math notranslate nohighlight">\(\sqrt{\mathtt{fan\_out}}\)</span>. Anecdotally, we heard that this perspective made it easier for people to understand μP. And the “spectral parameterization” we proposed in this paper was implemented in Hugging Face’s <a class="reference external" href="https://github.com/huggingface/nanotron">Nanotron</a>.</p>
 </section>
 <section id="automation-of-training">
 <h2>Automation of training<a class="headerlink" href="#automation-of-training" title="Permalink to this heading">¶</a></h2>
+<p>I believe that the future of this line of work is increasing levels of automation of training. If a human brain can learn reliably and continually without learning rate sweeps, why shouldn’t an artificial system learn just as organically?</p>
+<p>We pursued this agenda in our recent paper on automatic gradient descent, where we applied a majorize-minimize principle to solve for a learning rate analytically:</p>
 <blockquote>
 <div><div class="line-block">
 <div class="line">📒 <a class="reference external" href="https://arxiv.org/abs/2304.05187">Automatic gradient descent: Deep learning without hyperparameters</a></div>
@@ -357,16 +382,7 @@
 </div>
 </div>
 </div></blockquote>
-<p>and even more text</p>
-<blockquote>
-<div><div class="line-block">
-<div class="line">📕 <a class="reference external" href="https://arxiv.org/abs/2405.14813">Scalable optimization in the modular norm</a></div>
-<div class="line-block">
-<div class="line">Tim Large, Yang Liu, Minyoung Huh, Hyojin Bahng, Phillip Isola, Jeremy Bernstein</div>
-<div class="line">arXiv 2024</div>
-</div>
-</div>
-</div></blockquote>
+<p>Surprisingly this actually seems to work, although training is slower than using standard techniques. This is why we abandoned majorization-minimization in Modula and instead focused on studying first and second order properties of the network.</p>
 </section>
 </section>
 
@@ -434,6 +450,8 @@
             <ul>
 <li><a class="reference internal" href="#">The science of scale</a><ul>
 <li><a class="reference internal" href="#pre-history">Pre-history</a></li>
+<li><a class="reference internal" href="#now-is-the-time">Now is the time</a></li>
+<li><a class="reference internal" href="#p-enters-the-chat">μP enters the chat</a></li>
 <li><a class="reference internal" href="#truth-and-reconciliation">Truth and reconciliation</a></li>
 <li><a class="reference internal" href="#automation-of-training">Automation of training</a></li>
 </ul>
@@ -455,5 +473,6 @@
     <script src="../_static/copybutton.js"></script>
     <script src="../_static/tabs.js"></script>
     <script src="../_static/design-tabs.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>
