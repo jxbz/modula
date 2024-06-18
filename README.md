@@ -6,7 +6,7 @@
 
 Modula is a deep learning framework designed for graceful scaling. Neural networks written in Modula automatically transfer learning rate across scale.
 
-We are slowly writing [the Modula docs](https://jeremybernste.in/modula/). Check them out for an accessible introduction to scaling theory and the Modula API.
+We are slowly writing [the Modula docs](https://jeremybernste.in/modula/). Check them out for an accessible introduction to scaling theory and the Modula API. Also, here are some [slides](https://docs.google.com/presentation/d/12pykmY3KT1vP_25zFYISvVMA4KQbaVdeo6cRF8SMGXM/edit?usp=sharing) for a talk that Jeremy gave, that provide a more visual introduction to Modula.
 
 Modula is an experimental framework based on our research paper: [Scalable Optimization in the Modular Norm](https://arxiv.org/abs/2405.14813).
 
