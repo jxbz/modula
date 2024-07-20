@@ -78,7 +78,7 @@ By including the conversion factor :python:`self.scale = math.sqrt(fan_out / fan
 
     self.weight -= learning_rate * self.weight.grad / spectral_norm(self.weight.grad)
 
-In practice, you may want to replace :python:`self.weight.grad` with some kind of momentum or Adam expression. And the learning rate can optionally decay through the course of training.
+In practice, you may want to replace :python:`self.weight.grad` with some kind of momentum or Adam expression. And the learning rate can optionally decay through the course of training. Also, you can often replace :python:`spectral_norm(self.weight.grad)` with :python:`frobenius_norm(self.weight.grad)` since gradients tend to be low stable rank.
 
 Fixing depth scaling
 ^^^^^^^^^^^^^^^^^^^^^

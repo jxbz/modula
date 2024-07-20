@@ -23,20 +23,23 @@ This paper already contained many of the core ideas for scalable training. In pa
 - the spectral perspective: controlling the amount of spectral shift induced by a weight update---we emphasised this most in `version 1 <https://arxiv.org/abs/2002.03432v1>`_ of the paper;
 - making updates of size :math:`1/L` in a network of depth :math:`L` to account for the compositional structure;
 - the general idea that update normalization can lead to learning rate transfer;
-- anticipating that the ideas "may unlock a simpler workflow for training deeper and more complex neural networks".
 
-Now is the time
-^^^^^^^^^^^^^^^^
+In short, we anticipated that the ideas in the paper "may unlock a simpler workflow for training deeper and more complex neural networks" which is basically what we're seeing happen now. I made a three minute YouTube video to explain the main ideas in the paper:
 
-While working with Arash, Yisong and Ming-Yu, I felt quite inspired and actually made a YouTube video about training instabilities and scale. This was part of a video-making workshop that I helped organize.
+..  youtube:: dUm8hZFtbLg
+   :width: 100%
+   :align: center
+
+I also made another three minute video intended more for lay people:
 
 ..  youtube:: mOr--ifi1Vc
    :width: 100%
+   :align: center
 
 μP enters the chat
 ^^^^^^^^^^^^^^^^^^^
 
-About a year after we wrote `arXiv:2002.03432 <https://arxiv.org/abs/2002.03432>`_ and I made my video, Greg Yang and Edward Hu wrote a paper which made significant contributions:
+About a year after we wrote `arXiv:2002.03432 <https://arxiv.org/abs/2002.03432>`_ and after I made my videos, Greg Yang and Edward Hu wrote a paper which made significant further contributions:
 
    | 📙 `Feature learning in infinite-width neural networks <https://arxiv.org/abs/2011.14522>`_
    |     Greg Yang, Edward J. Hu
