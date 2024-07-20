@@ -3,9 +3,13 @@ Frequently asked questions
 
 Feel free to reach out or start a `GitHub issue <https://github.com/jxbz/modula/issues>`_ if you have any questions about Modula. We'll post answers to any useful or common questions on this page.
 
+.. dropdown:: Why does Adam beat SGD on transformer, and why does normalization fix SGD?
+	:icon: question
+
+	Coming soon.
+
 .. dropdown:: Why does modular normalization lead to learning rate transfer across scale?
 	:icon: question
-	:open:
 
 	In simple terms, when weight updates :math:`\Delta \mathbf{w}` are normalized in the modular norm :math:`\|\cdot\|_\mathsf{M}` of the module :math:`\mathsf{M}` then updates :math:`\Delta \mathbf{y}` to the module output are well-behaved in the output norm :math:`\|\cdot\|_\mathcal{Y}`, independent of the scale of the architecture. A little bit more formally:
 
@@ -14,6 +18,16 @@ Feel free to reach out or start a `GitHub issue <https://github.com/jxbz/modula/
 	3. therefore normalizing updates in the modular norm provides control on the change in outputs, independent of the size of the architecture.
 
 	Since modular normalization works by recursively normalizing the weight updates to each submodule, these desirable properties in fact extend to all submodules as well as the overall compound.
+
+.. dropdown:: What do we mean by "tensor alignment" in Modula?
+	:icon: question
+
+	Coming soon.
+
+.. dropdown:: The modular norm involves a max---why do I not see any maxes in the package?
+	:icon: question
+
+	Coming soon.
 
 .. dropdown:: Is it necessary to use orthogonal intialization in Modula?
 	:icon: question
