@@ -44,7 +44,6 @@ Feel free to reach out or start a `GitHub issue <https://github.com/jxbz/modula/
 
 .. dropdown:: What do we mean by "tensor alignment" in Modula?
 	:icon: question
-	:open:
 
 	In the guts of a neural network there can be found lots and lots of tensors. And sometimes these tensors like to multiply each other. For example, there are:
 
