@@ -86,17 +86,58 @@ Feel free to reach out or start a `GitHub issue <https://github.com/jxbz/modula/
 
 	   We have outlined a notion of alignment which captures whether or not a certain inequality governing a tensor product is tight. This is different to the notion of alignment measured in `Scaling Exponents Across Parameterizations and Optimizers <https://arxiv.org/abs/2407.05872>`_ which `turns out to be coupled to the matrix stable rank <https://x.com/jxbz/status/1814289986885140614>`_. Essentially, the findings on alignment in that paper don't have an obvious bearing on the notion of alignment used in Modula. Large-scale empirical tests of alignment as we have described it are certainly a valuable direction for future work.
 
+.. dropdown:: Is there a unique and optimal way to parameterize an architecture?
+	:icon: question
+
+	The short answer is no: if you're careful, there is some freedom in how you can parameterize your architecture. With that said, there are some constraints that you can't really avoid if you want things to work well. And there are some "natural choices" which I think we may as well agree on at least to ease communication between researchers.
+
+	A `LoRA layer <https://arxiv.org/abs/2106.09685>`_ provides a really good setting to think about these points. Given a :math:`n \times r` matrix :math:`B` and an :math:`r \times n` matrix :math:`A`, a LoRA layer is just the matrix product :math:`B A`. Now if you're a `spectral-μP <https://arxiv.org/abs/2310.17813>`_ afficionado, you'd know that the "right way" to scale these matrices is so that their initialization and updates have spectral norm proportional to :math:`\sqrt{\text{fan-out/fan-in}}`. Written out in full:
+
+	- matrix :math:`B` and update :math:`\Delta B` have spectral norms :math:`\|B\|_*` and :math:`\|\Delta B\|_* \propto \sqrt{n / r}`,
+	- matrix :math:`A` and update :math:`\Delta A` have spectral norms :math:`\|A\|_*` and :math:`\|\Delta A\|_* \propto \sqrt{r / n}`.
+
+	However, these conditions are more restrictive than necessary. Because matrices are homogeneuous linear maps, in the product :math:`BA` we are free to scale up the matrix :math:`B` by any factor so long as we divide the matrix :math:`A` by the same factor. Nothing changes if we do this. In particular, if we scale :math:`B` by factor :math:`\sqrt{r/n}` and divide :math:`A` by this same factor we obtain new conditions:
+
+	- matrix :math:`B` and update :math:`\Delta B` have spectral norms :math:`\|B\|_*` and :math:`\|\Delta B\|_* \propto 1`,
+	- matrix :math:`A` and update :math:`\Delta A` have spectral norms :math:`\|A\|_*` and :math:`\|\Delta A\|_* \propto 1`.
+
+	Using these new spectral scaling conditions will have exactly the same training dynamics.
+
+	.. admonition:: Matters of precision
+	   :class: seealso
+
+	   When considering representing the weight entries in floating point, a difference may emerge between these two schemes. In particular, one scheme may lead to weight entries more easily representable in a low-precision floating point number format. Charlie Blake et al. consider exploiting this type of "scale symmetry" in `u-μP: The Unit-Scaled Maximal Update Parametrization <https://arxiv.org/abs/2407.17465>`_.
+
+	In summary, I hope that this section demonstrates that:
+
+	1. the conditions in the spectral-μP paper provide a sensible default way of scaling matrices which should work well in generic situations;
+	2. however, the conditions are not unique, and in specific cases you can modify the rules---so long as you know what you're doing;
+	3. you may want to take advantage of scale symmetries if you are interested in designing low-precision training algorithms.
+
+.. dropdown:: What is the relationship between Modula and spectral-μP?
+	:icon: question
+
+	In the `spectral-μP paper <https://arxiv.org/abs/2310.17813>`_, we considered the problem of equipping individual layers---such as linear and embedding layers---with their "natural norm". Normalizing updates in this "natural norm" leads to learning rate transfer across the dimensions of that layer. You can see Modula as generalizing this approach to arbitrary compositions and concatenations of individual layers---i.e. neural nets.
+
+.. dropdown:: What is the relationship between Modula and Tensor Programs?
+	:icon: question
+
+	We pointed out in the section on `the science of scale <../history>`_ that Modula builds on an approach to optimization theory `that we first released <https://arxiv.org/abs/2002.03432>`_ almost a year before `the first incarnation of μP <https://arxiv.org/abs/2011.14522>`_. So I want to focus this answer on explaining the technical differences between Modula and Tensor Programs.
+
+	The main advantages of Modula over Tensor Programs are that:
+
+	1. **Modula is grounded in basic applied math.** We show that learning rate transfer is essentially just the question of how to build neural nets with tight and non-dimensional Lipschitz estimates. As far as things go in the math world, this is fairly basic. We think it is valuable to be clear-eyed and straightforward about this.
+	2. **Modula theory is non-asymptotic.** The unifying thread through the Tensor Programs series of works is the study of neural network computation in limiting cases: infinite width, infinite depth, and so on. This means that the theory is encumbered by significant mathematical overhead, and one is often confronted with thorny technical questions---for example: `do width and depth limits commute? <https://arxiv.org/abs/2302.00453>`_ In contrast, Modula is based on a completely non-asymptotic theory. It deals directly with the finite-sized neural networks that we actually use in practice, so you don't have to worry that certain technical details may be "lost in the limit". To show that this is not just talk, in our paper we `built a theory of an actual working transformer <https://arxiv.org/abs/2405.14813>`_.
+	3. **Modula is more automatic.** In Modula, we automatically build a norm during construction of the computation graph that can be used to explicitly normalize weight updates taken from any base optimizer. The Tensor Programs approach essentially amounts to manually deriving a priori estimates on the size of this norm, and using these estimates to modify the SGD learning rate per layer. However, working out these prior estimates is quite a hairy procedure which seemingly does not always work, hence why later Tensor Programs papers `shift to modifying Adam updates <https://arxiv.org/abs/2308.01814>`_. Adam updates are easier to deal with since they already impose a form of normalization on the gradients. Furthermore, the Tensor Programs calculations must be done by hand. The result is large tables of scaling rules, with tables of rules for different base optimizers (Adam versus SGD) and even tables for different matrix shapes (square versus wide rectangular versus skinny rectangular).
+
+	4. **Modula is easier to extend.** Ultimately, we hope that Modula---and more generally the idea of *metrized deep learning*---will inspire followup work on clean, simple and technically sound approaches to algorithm design in deep learning. We give some direction for future work towards the end of `our paper <https://arxiv.org/abs/2405.14813>`_, and we believe it should be relatively easy to extend our approach to handle new modules types and new norms.
+
+.. dropdown:: What is the relationship between Modula and AGD?
+	:icon: question
+
+	Coming soon.
+
 .. dropdown:: The modular norm involves a max---why do I not see any maxes in the package?
-	:icon: question
-
-	Coming soon.
-
-.. dropdown:: Is there a unique optimal way to parameterize an architecture?
-	:icon: question
-
-	Coming soon.
-
-.. dropdown:: What is the difference between Modula and μP?
 	:icon: question
 
 	Coming soon.
@@ -110,3 +151,8 @@ Feel free to reach out or start a `GitHub issue <https://github.com/jxbz/modula/
 	:icon: question
 
 	Not yet, although we plan to implement this and provide some examples.
+
+.. dropdown:: Do I need to be a mathematical savant to contribute to research of this kind?
+	:icon: question
+
+	Coming soon.
