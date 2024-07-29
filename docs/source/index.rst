@@ -36,7 +36,7 @@ If you prefer to read a more academic-style paper, then you can check out `our a
 Acknowledgements
 ^^^^^^^^^^^^^^^^^
 
-Thanks to Gavia Gray, Uzay Girit and Jyo Pari for helpful feedback.
+Thanks to Gavia Gray, Uzay Girit, Jyo Pari and Laurence Aitchison for helpful feedback.
 
 .. toctree::
    :hidden:

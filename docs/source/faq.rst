@@ -130,17 +130,32 @@ Feel free to reach out or start a `GitHub issue <https://github.com/jxbz/modula/
 	2. **Modula theory is non-asymptotic.** The unifying thread through the Tensor Programs series of works is the study of neural network computation in limiting cases: infinite width, infinite depth, and so on. This means that the theory is encumbered by significant mathematical overhead, and one is often confronted with thorny technical questions---for example: `do width and depth limits commute? <https://arxiv.org/abs/2302.00453>`_ In contrast, Modula is based on a completely non-asymptotic theory. It deals directly with the finite-sized neural networks that we actually use in practice, so you don't have to worry that certain technical details may be "lost in the limit". To show that this is not just talk, in our paper we `built a theory of an actual working transformer <https://arxiv.org/abs/2405.14813>`_.
 	3. **Modula is more automatic.** In Modula, we automatically build a norm during construction of the computation graph that can be used to explicitly normalize weight updates taken from any base optimizer. The Tensor Programs approach essentially amounts to manually deriving a priori estimates on the size of this norm, and using these estimates to modify the SGD learning rate per layer. However, working out these prior estimates is quite a hairy procedure which seemingly does not always work, hence why later Tensor Programs papers `shift to modifying Adam updates <https://arxiv.org/abs/2308.01814>`_. Adam updates are easier to deal with since they already impose a form of normalization on the gradients. Furthermore, the Tensor Programs calculations must be done by hand. The result is large tables of scaling rules, with tables of rules for different base optimizers (Adam versus SGD) and even tables for different matrix shapes (square versus wide rectangular versus skinny rectangular).
 
-	4. **Modula is easier to extend.** Ultimately, we hope that Modula---and more generally the idea of *metrized deep learning*---will inspire followup work on clean, simple and technically sound approaches to algorithm design in deep learning. We give some direction for future work towards the end of `our paper <https://arxiv.org/abs/2405.14813>`_, and we believe it should be relatively easy to extend our approach to handle new modules types and new norms.
+	4. **Modula is easier to extend.** Ultimately, we hope that Modula---and more generally the idea of *metrized deep learning*---will inspire followup work on clean, simple and technically sound approaches to algorithm design in deep learning. We give some directions for future work towards the end of `our paper <https://arxiv.org/abs/2405.14813>`_, and we believe it should be relatively easy to extend our approach to handle new modules types and new norms.
 
 .. dropdown:: What is the relationship between Modula and AGD?
 	:icon: question
 
-	Coming soon.
+	In part, Modula builds on the analysis from our previous paper on `automatic gradient descent <https://arxiv.org/abs/2304.05187>`_. The AGD paper focused on building a majorize-minimize-style analysis of deep fully-connected networks. The surprising aspect of the AGD algorithm was that it could train various deep learning problems with no learning rate, weight decay, momentum or schedule hyperparameters. However, the training was slower and sometimes not quite as good as conventional training setups.
+
+	The Modula paper, in contrast, shows how to modularize and automate the types of technical calculations done in the AGD paper. In Modula, we conduct these calculations to first and second order, since we came to believe that a full majorization is overly pessimistic, contributing to the slower training of AGD. And ultimately in the Modula experiments, we opted to use a linear decay learning rate schedule for its simplicity and high performance, rather than various automatic learning rate schedules that could be derived from the the Modula theory.
+
+	I (Jeremy) still think an analogue of AGD that is also fast and performant might still be possible. It might involve combining Modula with ideas from people like Konstantin Mishchenko and Aaron Defazio such as `Prodigy <https://arxiv.org/abs/2306.06101>`_ or `schedule-free optimizer <https://arxiv.org/abs/2405.15682>`_. I think this is a great direction for future work.
 
 .. dropdown:: The modular norm involves a max---why do I not see any maxes in the package?
 	:icon: question
 
-	Coming soon.
+	Computing the modular norm involves evaluating lots of expressions of the form:
+
+	.. math::
+		\| (\mathbf{w}_1, \mathbf{w}_2) \|_{\mathsf{M}} := \max ( p * \|\mathbf{w}_1\|_{\mathsf{M}_1} , q * \|\mathbf{w}_2\|_{\mathsf{M}_2}).
+
+
+	So you might be surprised not to see lots of maxes in the package. This is because to normalize a vector :math:`(\mathbf{w}_1, \mathbf{w}_2)` we do not just compute :math:`(\mathbf{w}_1, \mathbf{w}_2) / \|(\mathbf{w}_1, \mathbf{w}_2)\|_\mathsf{M}`. Instead, we separately normalize both sub-vectors in order to "saturate" the max. That is, we send:
+
+	.. math::
+		(\mathbf{w}_1, \mathbf{w}_2) \mapsto \left(\frac{\mathbf{w}_1}{p * \|\mathbf{w}_1\|_{\mathsf{M}_1}}, \frac{\mathbf{w}_2}{q * \|\mathbf{w}_2\|_{\mathsf{M}_2}} \right).
+
+	In other words, we maximize the size of each subvector under the constraint that the full vector has unit modular norm.
 
 .. dropdown:: Is it necessary to use orthogonal intialization in Modula?
 	:icon: question
@@ -155,4 +170,4 @@ Feel free to reach out or start a `GitHub issue <https://github.com/jxbz/modula/
 .. dropdown:: Do I need to be a mathematical savant to contribute to research of this kind?
 	:icon: question
 
-	Coming soon.
+	I don't think so. There are a lot of very technical people working in this field, bringing with them some quite advanced tools from math and theoretical physics, and this is great. But in my experience it's usually the simpler and more elementary ideas that actually work in practice. I strongly believe that deep learning theory is still at the stage of model building. And I resonate with both Rahimi and Recht's call for `"simple theorems" and "simple experiments" <https://archives.argmin.net/2017/12/11/alchemy-addendum/>`_ and George Dahl's call for `a healthy dose of skepticism <https://www.youtube.com/watch?v=huTx3rtv8q8>`_ when evaluating claims in the literature.
