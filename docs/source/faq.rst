@@ -3,6 +3,9 @@ Frequently asked questions
 
 Feel free to reach out or start a `GitHub issue <https://github.com/jxbz/modula/issues>`_ if you have any questions about Modula. We'll post answers to any useful or common questions on this page.
 
+Conceptual questions
+^^^^^^^^^^^^^^^^^^^^^
+
 .. dropdown:: The gradient is a vector: how can a vector have a spectral norm?
 	:icon: question
 
@@ -114,6 +117,9 @@ Feel free to reach out or start a `GitHub issue <https://github.com/jxbz/modula/
 	2. however, the conditions are not unique, and in specific cases you can modify the rules---so long as you know what you're doing;
 	3. you may want to take advantage of scale symmetries if you are interested in designing low-precision training algorithms.
 
+Related work
+^^^^^^^^^^^^^
+
 .. dropdown:: What is the relationship between Modula and spectral-μP?
 	:icon: question
 
@@ -141,6 +147,9 @@ Feel free to reach out or start a `GitHub issue <https://github.com/jxbz/modula/
 
 	I (Jeremy) still think an analogue of AGD that is also fast and performant might still be possible. It might involve combining Modula with ideas from people like Konstantin Mishchenko and Aaron Defazio such as `Prodigy <https://arxiv.org/abs/2306.06101>`_ or `schedule-free optimizer <https://arxiv.org/abs/2405.15682>`_. I think this is a great direction for future work.
 
+Modula package
+^^^^^^^^^^^^^^^
+
 .. dropdown:: The modular norm involves a max---why do I not see any maxes in the package?
 	:icon: question
 
@@ -167,7 +176,10 @@ Feel free to reach out or start a `GitHub issue <https://github.com/jxbz/modula/
 
 	Not yet, although we plan to implement this and provide some examples.
 
+Research philosophy
+^^^^^^^^^^^^^^^^^^^^
+
 .. dropdown:: Do I need to be a mathematical savant to contribute to research of this kind?
 	:icon: question
 
-	I don't think so. There are a lot of very technical people working in this field, bringing with them some quite advanced tools from math and theoretical physics, and this is great. But in my experience it's usually the simpler and more elementary ideas that actually work in practice. I strongly believe that deep learning theory is still at the stage of model building. And I resonate with both Rahimi and Recht's call for `"simple theorems" and "simple experiments" <https://archives.argmin.net/2017/12/11/alchemy-addendum/>`_ and George Dahl's call for `a healthy dose of skepticism <https://www.youtube.com/watch?v=huTx3rtv8q8>`_ when evaluating claims in the literature.
+	I don't think so. There are a lot of very technical people working in this field bringing with them some quite advanced tools from math and theoretical physics, and this is great. But in my experience it's usually the simpler and more elementary ideas that actually work in practice. I strongly believe that deep learning theory is still at the stage of model building. And I resonate with both Rahimi and Recht's call for `"simple theorems" and "simple experiments" <https://archives.argmin.net/2017/12/11/alchemy-addendum/>`_ and George Dahl's call for `a healthy dose of skepticism <https://www.youtube.com/watch?v=huTx3rtv8q8>`_ when evaluating claims in the literature.
