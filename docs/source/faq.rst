@@ -174,7 +174,7 @@ Modula package
 .. dropdown:: Does Modula support weight sharing?
 	:icon: question
 
-	Not yet, although we plan to implement this and provide some examples.
+	Not at present, although it would be possible to support this.
 
 Research philosophy
 ^^^^^^^^^^^^^^^^^^^^
