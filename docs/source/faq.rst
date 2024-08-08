@@ -147,6 +147,36 @@ Related work
 
 	I (Jeremy) still think an analogue of AGD that is also fast and performant might still be possible. It might involve combining Modula with ideas from people like Konstantin Mishchenko and Aaron Defazio such as `Prodigy <https://arxiv.org/abs/2306.06101>`_ or `schedule-free optimizer <https://arxiv.org/abs/2405.15682>`_. I think this is a great direction for future work.
 
+.. dropdown:: What is the relationship between Modula and Shampoo?
+	:icon: question
+
+	Actually no one asked this one, and I just thought about it for myself. But here goes... Consider a loss function :math:`\mathcal{L} : \mathbb{R}^{m \times n}\to\mathbb{R}`. In other words, we have a machine learning model whose weights are given by an :math:`m \times n` matrix :math:`\mathbf{W}`. Further, suppose that the loss is smooth in the sense that:
+
+	.. math::
+
+		\mathcal{L}(\mathbf{W} + \mathbf{\Delta W}) \leq \mathcal{L}(\mathbf{W}) +\mathrm{trace}(\mathbf{G}^\top \mathbf{\Delta W}) + \frac{1}{2} \|\mathbf{\Delta W}\|_*^2.
+
+	In words: the loss is "smooth in the spectral norm". This toy problem is interesting for us to think about since the modular norm on linear atomic modules *is* the spectral norm. The second term on the righthand side is the `Frobenius inner product <https://en.wikipedia.org/wiki/Frobenius_inner_product>`_ and :math:`\|\cdot\|_*` denotes the `spectral norm <https://mathworld.wolfram.com/SpectralNorm.html>`_. We have adopted the shorthand :math:`\mathbf{G}` for the gradient of the loss :math:`\nabla_\mathbf{W} \mathcal{L}(\mathbf{W})`, and we suppose that the gradient admits the singular value decomposition :math:`\mathbf{G} = \mathbf{U}\mathbf{\Sigma}\mathbf{V}^\top`.
+
+	If we minimise the righthand side of this inequality with respect to :math:`\mathbf{\Delta W}`, we find that the optimal step direction is given by :math:`\mathbf{\Delta W} \propto - \mathbf{U}\mathbf{V}^\top`. That is, we take the negative gradient and set all of its singular values to one. This direction "squeezes the most juice" out of the gradient under a spectral norm geometry. This is a somewhat classical observation. For instance, it appears in a 2015 paper on `stochastic spectral descent <https://ieeexplore.ieee.org/document/7347351>`_. Tim independently pointed this out to me in the course of the Modula project, and so did Laker Newhouse who is a talented undergrad at MIT.
+
+	What stopped us experimenting further with this idea is that it's not obvious how to compute :math:`\mathbf{\Delta W} \propto - \mathbf{U}\mathbf{V}^\top` without computing SVDs, and SVDs are kind of expensive in PyTorch. But a cool realization I had recently is that there is another way to compute :math:`\mathbf{U}\mathbf{V}^\top`. In fact, it holds that:
+
+	.. math::
+		\mathbf{U}\mathbf{V}^\top = (\mathbf{G}\mathbf{G}^\top)^{-\tfrac{1}{4}} \mathbf{G} (\mathbf{G}^\top \mathbf{G})^{-\tfrac{1}{4}}.
+
+	Why is this interesting? Well, for one, that expression on the right-hand side is precisely the `Shampoo <https://arxiv.org/abs/1802.09568>`_ preconditioner with the accumulation dropped. It suggests a new perspective on Shampoo as doing "steepest descent under the spectral norm". This is a squarely "first-order" interpretation, as opposed to the predominant way people seem to think of Shampoo as an "approximate second-order method". 
+
+	Another reason this could be interesting is that a lot of efficiencies developed for Shampoo could now be applied to `stochastic spectral descent <https://ieeexplore.ieee.org/document/7347351>`_ and in turn Modula linear modules. One of the coolest examples is something I found in `Rohan Anil's slides <https://rosanneliu.com/dlctfs/dlct_210312.pdf>`_ on Shampoo. It's the idea that you can compute expressions like :math:`(\mathbf{G}\mathbf{G}^\top)^{-1/4}` using `Newton-Raphson iterations <https://en.wikipedia.org/wiki/Newton%27s_method>`_---a very different approach to taking SVDs. A classic paper on this topic is called `On the Computation of the Matrix k-th Root <https://onlinelibrary.wiley.com/doi/10.1002/%28SICI%291521-4001%28199803%2978%3A3%3C167%3A%3AAID-ZAMM167%3E3.0.CO%3B2-R>`_ by Slobodan Lakić. `I implemented Algorithm 1 from that paper as a gist <https://gist.github.com/jxbz/fe235ee1c72b8b41ccd0d02b43378cf2>`_, finding that it often gives significant speedups over the SVD, provided one is willing to tolerate some error.
+
+	An extremely natural way to combine this idea with Modula is to write a new "ShampooLinear" atomic module which replaces the normalize function of our Linear atom with a zeroth matrix power. Jack Gallagher has started experimenting with this idea in `Modulax <https://github.com/GallagherCommaJack/modulax/>`_.
+
+
+
+
+
+
+
 Modula package
 ^^^^^^^^^^^^^^^
 
